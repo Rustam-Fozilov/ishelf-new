@@ -19,7 +19,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('add', [PermissionController::class, 'add']);
         Route::put('update', [PermissionController::class, 'update']);
         Route::get('list', [PermissionController::class, 'list']);
-        Route::get('get/{id}', [PermissionController::class, 'get']);
+        Route::get('get/{id}', [PermissionController::class, 'show']);
         Route::delete('delete/{id}', [PermissionController::class, 'delete']);
     });
 
