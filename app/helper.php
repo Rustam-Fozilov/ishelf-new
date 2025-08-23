@@ -4,6 +4,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Request;
 
 function throwErrors($errors, $code = 400)
 {
@@ -131,4 +132,20 @@ function validateData($data, $rules, $redirect = false)
     }
     return true;
 }
- 
+
+function getLang(): string
+{
+    $lang = '';
+    $url = explode('/', Request::url());
+    $url = array_slice($url, 3);
+
+    if (count($url) > 0) {
+        $p = @$url[0] == 'api' ? 1 : 0;
+        if (in_array(@$url[$p], config('app.locales'))) {
+            $lang = '/' . $url[$p];
+            app()->setLocale($url[$p]);
+        }
+    }
+
+    return $lang;
+}

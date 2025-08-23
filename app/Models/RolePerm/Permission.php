@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\RolePerm;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;

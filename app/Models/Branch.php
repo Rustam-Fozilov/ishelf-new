@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Branch extends Model
 {
+    protected $table = 'branches';
+
     protected $fillable = [
         'status',
         'name',
@@ -28,7 +30,7 @@ class Branch extends Model
 
     public function region():BelongsTo
     {
-        return $this->belongsTo(Region::class);
+        return $this->belongsTo(Region::class, 'region_id', 'id');
     }
 
     public function shelf():HasMany

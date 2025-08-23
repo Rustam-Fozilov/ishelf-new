@@ -24,7 +24,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        return auth()->user();
+        return auth()->user()->load('branches');
     }
 
     public function logout(): JsonResponse

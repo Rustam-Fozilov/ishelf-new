@@ -1,18 +1,33 @@
 <?php
 
 use Illuminate\Foundation\Application;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
-        health: '/up',
+        using: function () {
+            $lang = getLang();
+
+            Route::middleware('api')
+                ->prefix('api' . $lang)
+                ->group(base_path('routes/api.php'));
+
+            Route::middleware('api')
+                ->prefix('api' . $lang)
+                ->group(base_path('routes/role_perm.php'));
+
+            Route::middleware('web')
+                ->prefix($lang)
+                ->group(base_path('routes/web.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
+    })
+    ->withSchedule(function (Schedule $schedule) {
+        $schedule->command('telescope:prune')->dailyAt('00:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
