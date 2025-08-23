@@ -45,6 +45,17 @@ class RoleService
         }
     }
 
+    public static function checkById(int $id)
+    {
+        $role = Role::query()->find($id);
+
+        if (is_null($role)) {
+            throwError('Role not found');
+        }
+
+        return $role;
+    }
+
     public function checkByName(string $title): void
     {
         $role = Role::query()->where('title', $title)->first();

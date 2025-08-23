@@ -10,4 +10,9 @@ class UserService
     {
         User::query()->whereIn('id', $user_ids)->update(['role_id' => $role_id]);
     }
+
+    public function getById(int $id, array $with = []): ?User
+    {
+        return User::with($with)->find($id);
+    }
 }

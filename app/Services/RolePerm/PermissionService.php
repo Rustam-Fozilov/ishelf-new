@@ -13,7 +13,7 @@ class PermissionService
         self::checkKeyUnique($params['key']);
 
         if ($params['is_parent'] == 0) {
-            self::checkByParent($params['is_parent']);
+            self::checkByParent($params['parent_id']);
         }
 
         $perm = Permission::query()->create([
@@ -79,7 +79,7 @@ class PermissionService
         self::checkById($id);
 
         if ($params['is_parent'] == 0) {
-            self::checkByParent($params['is_parent']);
+            self::checkByParent($params['parent_id']);
         }
 
         self::checkUniqueWithoutId($id, $params['key']);
