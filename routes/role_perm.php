@@ -16,10 +16,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::group(['prefix' => 'permission'], function () {
-        Route::post('add', [PermissionController::class, 'add']);
-        Route::put('update', [PermissionController::class, 'update']);
         Route::get('list', [PermissionController::class, 'list']);
         Route::get('get/{id}', [PermissionController::class, 'show']);
+        Route::post('add', [PermissionController::class, 'add']);
+        Route::put('update', [PermissionController::class, 'update']);
         Route::delete('delete/{id}', [PermissionController::class, 'delete']);
     });
 
