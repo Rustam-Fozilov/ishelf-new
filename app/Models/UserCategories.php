@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserCategories extends Model
 {
-    protected $fillable = ['user_id','category_sku'];
+    protected $table = 'user_categories';
 
     public $timestamps = false;
+
+    protected $fillable = [
+        'user_id',
+        'category_sku'
+    ];
+
 }

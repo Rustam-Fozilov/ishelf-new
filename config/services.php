@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'invoice' => [
+        'base_url' => env('INVOICE_BASE_URL'),
+        'token' => env('INVOICE_TOKEN'),
+    ]
 ];
