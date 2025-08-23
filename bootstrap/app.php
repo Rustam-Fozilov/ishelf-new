@@ -24,7 +24,13 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'projects_token' => \App\Http\Middleware\ProjectsTokenMiddleware::class,
+        ]);
+
+        $middleware->group('api', [
+            'throttle:150,1'
+        ]);
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('telescope:prune')->dailyAt('00:00');

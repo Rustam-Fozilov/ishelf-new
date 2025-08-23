@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\Shelf\ShelfController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,5 +26,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('categories', [UserController::class, 'categories']);
         Route::get('branches', [UserController::class, 'branches']);
         Route::delete('delete/{id}', [UserController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'shelf'], function () {
+        Route::post('add', [ShelfController::class, 'add']);
+        Route::get('list', [ShelfController::class, 'list']);
+        Route::put('update/{id}', [ShelfController::class, 'update']);
+        Route::get('get/{id}', [ShelfController::class, 'getById']);
+        Route::get('product_ordering/{shelf_id}',[ShelfController::class,'productOrdering']);
+        Route::delete('delete/skus', [ShelfController::class, 'deleteSkus']);
+        Route::delete('delete/{id}', [ShelfController::class, 'delete']);
+        Route::post('update/phone/table', [ShelfController::class, 'updatePhoneTable']);
     });
 });
