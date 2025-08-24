@@ -18,8 +18,13 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $data = AuthService::login($request->all());
+        $data = $this->service->login($request->all());
         return success($data);
+    }
+
+    public function loginWeb(Request $request)
+    {
+        return $this->service->loginWeb($request);
     }
 
     public function me()

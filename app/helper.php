@@ -14,7 +14,7 @@ function throwErrors($errors, $code = 400)
 
 function throwError($message, int $code = 400)
 {
-    return throwErrors(['success'=>false,'message'=>$message],$code);
+    return throwErrors(['success' => false, 'message' => $message], $code);
 }
 
 function throwResponse($class, $code = 400)
@@ -26,9 +26,11 @@ function throwResponse($class, $code = 400)
 
 function failedValidation($validator)
 {
-    foreach ($validator->errors()->toArray() as $value) {
-        throwError($value[0]);
+    $errors = [];
+    foreach ($validator->errors()->toArray() as $key => $value) {
+        $errors[] = ['message' => $value['0'] . " ($key)"];
     }
+    throwErrors(['errors' => $errors]);
 }
 
 function success($data = null): JsonResponse
@@ -40,12 +42,6 @@ function success($data = null): JsonResponse
 function response_errors($errors, int $code = 400): JsonResponse
 {
     return response()->json($errors, $code);
-}
-
-function bindRepo($interface, $repo)
-{
-    app()->bind($interface, $repo);
-    return app()->make($interface);
 }
 
 function getPinflYear($n): int
@@ -119,6 +115,11 @@ function translit($text, $lang = 'ru')
     ];
 }
 
+function generateOtp():string
+{
+    return rand(1000, 9999);
+}
+
 function validateData($data, $rules, $redirect = false)
 {
     $validator = Validator::make($data, $rules);
@@ -130,7 +131,34 @@ function validateData($data, $rules, $redirect = false)
             return false;
         }
     }
+
     return true;
+}
+
+function generateToken(int $length = 16):string
+{
+    return Str::random($length);
+}
+
+function generateSexToPinfl(string $pinfl):?int
+{
+    $firstDigit = (int) substr($pinfl, 0, 1);
+
+    $sex = null;
+
+    if (in_array($firstDigit, [1, 3, 5, 7, 9])) {
+        $sex = 1;
+    } elseif (in_array($firstDigit, [0, 2, 4, 6, 8])) {
+        $sex = 2;
+    }
+
+    return $sex;
+}
+
+function phoneClear(string $phone):string
+{
+    $needs = [' ', '(', ')', '+'];
+    return str_replace($needs, '', $phone);
 }
 
 function getLang(): string
