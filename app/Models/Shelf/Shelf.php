@@ -2,17 +2,16 @@
 
 namespace App\Models\Shelf;
 
-use App\Models\AutoOrdering;
+use App\Models\Shelf\AutoOrdering;
 use App\Models\Branch;
-use App\Models\ManualShelf;
-use App\Models\PhoneShelf;
-use App\Models\ProductCategory;
+use App\Models\Shelf\PhoneShelf;
+use App\Models\Product\ProductCategory;
 use App\Models\Shelf\ProductShelf as ProductShelf;
-use App\Models\ShelfChange;
-use App\Models\ShelfUpdate;
+use App\Models\Shelf\ShelfChange;
+use App\Models\Shelf\ShelfUpdate;
 use App\Models\Stock\Stock;
 use App\Models\Upload;
-use App\Models\UserShelfUpdate;
+use App\Models\User\UserShelfUpdate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -55,11 +54,6 @@ class Shelf extends Model implements Auditable
     public function phone_tables():HasMany
     {
         return $this->hasMany(PhoneShelf::class);
-    }
-
-    public function manual_orders():HasMany
-    {
-        return $this->hasMany(ManualShelf::class);
     }
 
     public function getTotal()

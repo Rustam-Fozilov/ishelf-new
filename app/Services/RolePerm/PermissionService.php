@@ -183,6 +183,18 @@ class PermissionService
         return false;
     }
 
+    public function hasPermission($key, $redirect = true): bool
+    {
+        $user = auth()->user();
+        if ($user->is_admin) return true;
+
+        $allow = RolePermsService::getAllow($user->role_id, $key);
+        if ($allow != 0) return true;
+
+        if ($redirect) $this->forbidden($key);
+        return false;
+    }
+
     public static function getAllow($key, $redirect = false, $itemUserId = 0, $field = 'id'): string
     {
         $user = auth()->user();

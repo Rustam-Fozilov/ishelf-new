@@ -29,8 +29,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::group(['prefix' => 'shelf'], function () {
-        Route::post('add', [ShelfController::class, 'add']);
         Route::get('list', [ShelfController::class, 'list']);
+        Route::post('add', [ShelfController::class, 'add']);
         Route::put('update/{id}', [ShelfController::class, 'update']);
         Route::get('get/{id}', [ShelfController::class, 'getById']);
         Route::get('product_ordering/{shelf_id}',[ShelfController::class,'productOrdering']);
