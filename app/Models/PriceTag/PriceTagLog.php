@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\PriceTag;
 
 //use Illuminate\Database\Eloquent\Model;
 use MongoDB\Laravel\Eloquent\Model;

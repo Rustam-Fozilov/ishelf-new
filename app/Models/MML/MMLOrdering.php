@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\MML;
 
+use App\Models\Branch;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

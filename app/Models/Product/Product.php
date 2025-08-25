@@ -2,7 +2,7 @@
 
 namespace App\Models\Product;
 
-use App\Models\CategoryBrand;
+use App\Models\Category\CategoryBrand;
 use App\Models\PriceTagGood;
 use App\Models\ProductAttribute;
 use App\Models\ProductCategory;

@@ -50,9 +50,4 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Branch::class, 'user_branches', 'user_id', 'branch_id');
     }
-
-    public function shelf_updates(): HasMany
-    {
-        return $this->hasMany(UserShelfUpdate::class);
-    }
 }
