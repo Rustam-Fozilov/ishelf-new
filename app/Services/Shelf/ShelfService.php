@@ -3,25 +3,29 @@
 namespace App\Services\Shelf;
 
 use App\Models\Shelf\Shelf;
+use Illuminate\Support\Facades\DB;
 
 class ShelfService
 {
     public function add(array $params)
     {
-        $this->checkUnique($params['branch_id'], $params['category_sku']);
+        DB::beginTransaction();
 
-        $shelf = Shelf::query()->create($params);
-    }
+        try {
+            $checkService = new ShelfCheckService();
+            $checkService->checkUnique($params['branch_id'], $params['category_sku']);
+            $is_phone = $checkService->isPhone($params['sku']);
 
-    public function checkUnique(int $branch_id, int $category_sku)
-    {
-        $shelf = Shelf::query()
-            ->where('branch_id', $branch_id)
-            ->where('category_sku', $category_sku)
-            ->first();
+            $shelf = Shelf::query()->create($params);
 
-        if ($shelf) {
-            throwError(__('shelf.exist'));
+            if ($is_phone) {
+                PhoneShelfService::create($shelf->id, $params['items']);
+            }
+
+            DB::commit();
+            return $shelf;
+        } catch (\Throwable $e) {
+            return throwResponse($e);
         }
     }
 }

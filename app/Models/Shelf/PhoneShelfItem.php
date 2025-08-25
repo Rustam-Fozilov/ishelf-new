@@ -20,6 +20,6 @@ class PhoneShelfItem extends Model
 
     public function phone_shelf(): BelongsTo
     {
-        return $this->belongsTo(PhoneShelf::class, 'phone_shelf_id');
+        return $this->belongsTo(PhoneShelf::class, 'phone_shelf_id', 'id');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models\Shelf;
 
-use App\Models\PhoneShelfItem;
+use App\Models\Shelf\PhoneShelfItem;
 use App\Models\Shelf\Shelf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,11 +21,11 @@ class PhoneShelf extends Model
 
     public function shelf():BelongsTo
     {
-        return $this->belongsTo(Shelf::class);
+        return $this->belongsTo(Shelf::class, 'shelf_id', 'id');
     }
 
-    public function phone_shelf_items(): HasMany
+    public function items(): HasMany
     {
-        return $this->hasMany(PhoneShelfItem::class);
+        return $this->hasMany(PhoneShelfItem::class, 'phone_shelf_id', 'id');
     }
 }
