@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\Shelf\ShelfController;
+use App\Http\Controllers\Shelf\ShelfStockPriorityController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,5 +37,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::delete('delete/skus', [ShelfController::class, 'deleteSkus']);
         Route::delete('delete/{id}', [ShelfController::class, 'delete']);
         Route::post('update/phone/table', [ShelfController::class, 'updatePhoneTable']);
+    });
+
+    Route::group(['prefix' => 'priority'], function() {
+        Route::get('shelf/get/{shelf_id}', [ShelfStockPriorityController::class, 'get']);
+        Route::post('shelf/add/{shelf_id}', [ShelfStockPriorityController::class, 'add']);
+        Route::delete('shelf/delete/{shelf_id}', [ShelfStockPriorityController::class, 'delete']);
     });
 });
