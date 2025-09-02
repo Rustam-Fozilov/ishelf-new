@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\Shelf\ShelfController;
@@ -43,5 +44,31 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('shelf/get/{shelf_id}', [ShelfStockPriorityController::class, 'get']);
         Route::post('shelf/add/{shelf_id}', [ShelfStockPriorityController::class, 'add']);
         Route::delete('shelf/delete/{shelf_id}', [ShelfStockPriorityController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('branch_sync', [AdminController::class, 'branchSync']);
+
+        Route::group(['prefix' => 'sync_attributes'], function () {
+            Route::get('all', [AdminController::class, 'syncAllParams']);
+            Route::get('phone', [AdminController::class, 'phone']);
+            Route::get('water_heater', [AdminController::class, 'waterHeater']);
+            Route::get('refrigerator', [AdminController::class, 'refrigerator']);
+            Route::get('air_conditioner', [AdminController::class, 'airConditioner']);
+            Route::get('laptop', [AdminController::class, 'laptop']);
+            Route::get('tablet', [AdminController::class, 'tablet']);
+            Route::get('mono_block', [AdminController::class, 'monoBlock']);
+            Route::get('printer', [AdminController::class, 'printer']);
+            Route::get('gas_cooker', [AdminController::class, 'gasCooker']);
+            Route::get('washing_machine', [AdminController::class, 'washingMachineSync']);
+            Route::get('vacuum_cleaner', [AdminController::class, 'vacuumCleaner']);
+            Route::get('tv', [AdminController::class, 'tv']);
+            Route::get('hood', [AdminController::class, 'hood']);
+            Route::get('microwave_oven', [AdminController::class, 'microwaveOven']);
+            Route::get('mini_oven', [AdminController::class, 'miniOven']);
+            Route::get('freezer', [AdminController::class, 'freezer']);
+            Route::get('oven', [AdminController::class, 'oven']);
+            Route::get('heater', [AdminController::class, 'heater']);
+        });
     });
 });
