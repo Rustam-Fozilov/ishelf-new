@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Shelf;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Shelf\AddRequest;
+use App\Http\Requests\Shelf\DeleteSkusRequest;
 use App\Http\Requests\Shelf\ListRequest;
+use App\Http\Requests\Shelf\UpdatePhoneTableRequest;
 use App\Http\Resources\Resource;
 use App\Models\Shelf\Shelf;
 use App\Services\RolePerm\PermissionService;
@@ -27,6 +29,13 @@ class ShelfController extends Controller
         return new Resource($data);
     }
 
+    public function getById(int $id)
+    {
+        $this->permissionService->isAllow('shelf.get', 1, true);
+        $data = $this->service->getById($id);
+        return success($data);
+    }
+
     public function add(AddRequest $request)
     {
         $this->permissionService->isAllow('shelf.add', 1, true);
@@ -41,10 +50,23 @@ class ShelfController extends Controller
         return success();
     }
 
-    public function getById(int $id)
+    public function deleteSkus(DeleteSkusRequest $request)
     {
-        $this->permissionService->isAllow('shelf.get', 1, true);
-        $data = $this->service->getById($id);
-        return success($data);
+        $this->service->deleteSkus($request->validated());
+        return success();
+    }
+
+    public function delete(int $id)
+    {
+        $this->permissionService->isAllow('shelf.delete', 1, true);
+        $this->service->delete($id);
+        return success();
+    }
+
+    public function updatePhoneTable(UpdatePhoneTableRequest $request)
+    {
+        $this->permissionService->isAllow('shelf.change_phone', 1, true);
+        $this->service->updatePhoneTable($request->validated());
+        return success();
     }
 }

@@ -55,7 +55,7 @@ class Shelf extends Model implements Auditable
 
     public function phone_tables():HasMany
     {
-        return $this->hasMany(PhoneShelf::class);
+        return $this->hasMany(PhoneShelf::class, 'shelf_id', 'id');
     }
 
     public function getTotal()

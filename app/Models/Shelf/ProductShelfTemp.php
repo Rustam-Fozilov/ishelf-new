@@ -2,9 +2,8 @@
 
 namespace App\Models\Shelf;
 
-use App\Models\Product;
-use App\Models\ProductAttribute;
-use App\Models\Shelf\Shelf;
+use App\Models\Product\Product;
+use App\Models\Product\ProductAttribute;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 

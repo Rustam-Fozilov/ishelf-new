@@ -2,10 +2,8 @@
 
 namespace App\Models\Shelf;
 
-use App\Models\Product;
-use App\Models\ProductAttribute;
-use App\Models\Shelf\Shelf as Shelves;
-use App\Models\ShelfChange;
+use App\Models\Product\Product;
+use App\Models\Product\ProductAttribute;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -45,6 +43,6 @@ class ProductShelf extends Model implements Auditable
 
     public function shelves()
     {
-        return $this->hasOne(Shelves::class, 'id', 'shelf_id');
+        return $this->hasOne(Shelf::class, 'id', 'shelf_id');
     }
 }

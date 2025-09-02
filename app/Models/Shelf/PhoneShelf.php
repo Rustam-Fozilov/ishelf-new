@@ -24,7 +24,7 @@ class PhoneShelf extends Model
         return $this->belongsTo(Shelf::class, 'shelf_id', 'id');
     }
 
-    public function items(): HasMany
+    public function phone_shelf_items(): HasMany
     {
         return $this->hasMany(PhoneShelfItem::class, 'phone_shelf_id', 'id');
     }

@@ -2,7 +2,11 @@
 
 namespace App\Services\Shelf;
 
+use App\Models\Shelf\ProductShelf;
+use App\Models\Shelf\PhoneShelf;
+use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
+use App\Services\ProductShelf\PhoneService;
 use Illuminate\Support\Facades\DB;
 
 class ShelfService
@@ -100,6 +104,85 @@ class ShelfService
             Shelf::query()->where('id', $id)->update($params);
         } catch (\Throwable $e) {
             throwResponse($e);
+        }
+    }
+
+    public function deleteSkus(array $params)
+    {
+        // TODO: tugatish kerak, product service class bilan
+    }
+
+    public function delete(int $id): void
+    {
+        Shelf::query()->where('id', $id)->update(['status' => 0]);
+    }
+
+    public function updatePhoneTable(array $params): void
+    {
+        DB::beginTransaction();
+
+        try {
+            $old = PhoneShelf::query()->where('id', $params['phone_table_id'])->first();
+
+            $old->update([
+                'shelf_id'      => $params['shelf_id'],
+                'status_zone'   => $params['status_zone'] ?? $old->status_zone,
+                'product_count' => $params['product_count'] ?? $old->product_count,
+                'size'          => $params['size'] ?? $old->size,
+                'type'          => $params['type'],
+            ]);
+
+            $orderingTemp = ProductShelfTemp::query()
+                ->where('shelf_id', $params['shelf_id'])
+                ->where('floor', $old->id)
+                ->orderBy('ordering')
+                ->first();
+
+            self::updatePhoneOrderings($old, $orderingTemp, $params);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            throwResponse($e);
+        }
+    }
+
+    public static function updatePhoneOrderings($phone_shelf, $orderingTemp, $data): void
+    {
+        ProductShelfTemp::query()
+            ->where('shelf_id', $data['shelf_id'])
+            ->where('floor', $data['phone_table_id'])
+            ->delete();
+
+        ProductShelf::query()
+            ->where('shelf_id', $data['shelf_id'])
+            ->where('floor', $data['phone_table_id'])
+            ->delete();
+
+        $current_ordering = PhoneService::createTempByPhoneShelfId($phone_shelf->id, $orderingTemp->ordering);
+
+        $temp_ordering = $current_ordering;
+        $temps = ProductShelfTemp::query()
+            ->where('shelf_id', $phone_shelf->shelf_id)
+            ->where('floor', '>', $phone_shelf->id)
+            ->orderBy('ordering')
+            ->get();
+
+        foreach ($temps as $temp) {
+            $temp->ordering = $temp_ordering;
+            $temp->save();
+            $temp_ordering++;
+        }
+
+        $shelves = ProductShelf::query()
+            ->where('shelf_id', $phone_shelf->shelf_id)
+            ->where('floor', '>', $phone_shelf->id)
+            ->orderBy('ordering')
+            ->get();
+
+        foreach ($shelves as $shelf) {
+            $shelf->ordering = $current_ordering;
+            $shelf->save();
+            $current_ordering++;
         }
     }
 }
