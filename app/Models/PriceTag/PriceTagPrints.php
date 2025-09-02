@@ -2,7 +2,6 @@
 
 namespace App\Models\PriceTag;
 
-use App\Models\PriceTag\Sennik;
 use App\Models\Product\Product;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;

@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserShelfUpdate extends Model
 {
+    protected $table = 'user_shelf_updates';
+
     protected $fillable = ['user_id', 'shelf_id', 'read_at'];
 
     public function user(): BelongsTo

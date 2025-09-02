@@ -2,13 +2,9 @@
 
 namespace App\Models\Shelf;
 
-use App\Models\Shelf\AutoOrdering;
 use App\Models\Branch;
-use App\Models\Shelf\PhoneShelf;
 use App\Models\Product\ProductCategory;
 use App\Models\Shelf\ProductShelf as ProductShelf;
-use App\Models\Shelf\ShelfChange;
-use App\Models\Shelf\ShelfUpdate;
 use App\Models\Stock\Stock;
 use App\Models\Upload;
 use App\Models\User\UserShelfUpdate;
@@ -65,11 +61,6 @@ class Shelf extends Model implements Auditable
                 $p->on('products.sku', '=', 'stocks.sku')
                     ->where('products.category_sku', '=', $this->category_sku);
             })->count();
-    }
-
-    public function updates():HasMany
-    {
-        return $this->hasMany(ShelfUpdate::class);
     }
 
     public function user_updates():HasMany

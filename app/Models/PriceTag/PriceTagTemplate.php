@@ -2,7 +2,6 @@
 
 namespace App\Models\PriceTag;
 
-use App\Models\PriceTag\Sennik;
 use App\Models\Upload;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

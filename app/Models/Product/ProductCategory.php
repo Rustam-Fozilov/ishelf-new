@@ -3,8 +3,6 @@
 namespace App\Models\Product;
 
 use App\Models\PriceTag\PriceTagGood;
-use App\Models\Product\Product;
-use App\Models\Product\ProductAttribute;
 use App\Models\Shelf\Shelf;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;

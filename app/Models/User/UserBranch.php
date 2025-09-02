@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class UserBranch extends Model
 {
+    protected $table = 'user_branches';
+
     protected $fillable = ['user_id', 'branch_id'];
 
     public $timestamps = false;

@@ -2,7 +2,6 @@
 
 namespace App\Models\Application;
 
-use App\Models\Application;
 use App\Models\Branch;
 use App\Models\Region;
 use Illuminate\Database\Eloquent\Model;

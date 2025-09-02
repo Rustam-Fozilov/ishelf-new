@@ -2,10 +2,9 @@
 
 namespace App\Models\PriceTag;
 
-use App\Models\PriceTag\Sennik;
 use App\Models\Product\Product;
+use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductMonth;
-use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

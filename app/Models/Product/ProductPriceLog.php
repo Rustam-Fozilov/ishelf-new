@@ -2,7 +2,6 @@
 
 namespace App\Models\Product;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model;
 //use Illuminate\Database\Eloquent\Model;
 

@@ -2,7 +2,6 @@
 
 namespace App\Models\Product;
 
-use App\Models\ProductParameter;
 use App\Models\Upload;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

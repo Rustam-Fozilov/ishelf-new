@@ -2,7 +2,6 @@
 
 namespace App\Models\Shelf;
 
-use App\Models\PhoneShelf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

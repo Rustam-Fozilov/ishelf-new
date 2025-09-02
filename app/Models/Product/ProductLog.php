@@ -7,6 +7,8 @@ use MongoDB\Laravel\Eloquent\Model;
 
 class ProductLog extends Model
 {
+    protected $table = 'product_logs';
+
     protected $connection = 'mongodb';
 
     protected $fillable = ['data'];

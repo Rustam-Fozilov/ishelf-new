@@ -2,8 +2,6 @@
 
 namespace App\Models\PriceTag;
 
-use App\Models\PriceTagGood;
-use App\Models\PriceTagTemplate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

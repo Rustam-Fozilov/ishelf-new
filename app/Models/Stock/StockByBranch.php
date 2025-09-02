@@ -2,7 +2,7 @@
 
 namespace App\Models\Stock;
 
-use App\Models\ProductCategory;
+use App\Models\Product\ProductCategory;
 use MongoDB\Laravel\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Product\ProductCategory;
 use App\Models\RolePerm\Role;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 

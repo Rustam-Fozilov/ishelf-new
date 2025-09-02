@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserFile extends Model
 {
-    protected $fillable = ['user_id','shelf_id'];
+    protected $table = 'user_files';
+
+    protected $fillable = ['user_id', 'shelf_id'];
 
     public function user(): BelongsTo
     {

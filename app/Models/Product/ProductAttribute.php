@@ -2,12 +2,13 @@
 
 namespace App\Models\Product;
 
-use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductAttribute extends Model
 {
+    protected $table = 'product_attributes';
+
     protected $fillable = [
         'sku',
         'height',

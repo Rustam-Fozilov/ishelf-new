@@ -2,9 +2,8 @@
 
 namespace App\Models\Application;
 
-use App\Models\AppHistory;
 use App\Models\Branch;
-use App\Models\ProductCategory;
+use App\Models\Product\ProductCategory;
 use App\Models\Region;
 use App\Models\Shelf\Shelf;
 use App\Models\Upload;

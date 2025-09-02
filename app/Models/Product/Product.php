@@ -3,13 +3,8 @@
 namespace App\Models\Product;
 
 use App\Models\Category\CategoryBrand;
-use App\Models\PriceTagGood;
-use App\Models\ProductAttribute;
-use App\Models\ProductCategory;
-use App\Models\ProductParameter;
-use App\Models\ProductPrice;
-use App\Models\Shelf;
-use App\Models\ShelfUpdate;
+use App\Models\PriceTag\PriceTagGood;
+use App\Models\Shelf\ProductShelf;
 use App\Models\Stock\Stock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
+    protected $table = 'products';
+
     protected $fillable = [
         'category_sku',
         'sku',
@@ -51,11 +48,6 @@ class Product extends Model
         return $this->hasMany(Stock::class, 'sku', 'sku')->where('branch_id', $branch_id)->first();
     }
 
-    public function shelf_update(): HasMany
-    {
-        return $this->hasMany(ShelfUpdate::class, 'sku', 'sku');
-    }
-
     public function child(): HasMany
     {
         return $this->hasMany(Product::class, 'parent_sku', 'sku');
@@ -63,7 +55,7 @@ class Product extends Model
 
     public function shelves(): HasMany
     {
-        return $this->hasMany(Shelf\ProductShelf::class, 'sku', 'sku');
+        return $this->hasMany(ProductShelf::class, 'sku', 'sku');
     }
 
     public function prices(): HasMany
@@ -78,6 +70,6 @@ class Product extends Model
 
     public function parameters(): HasMany
     {
-        return $this->hasMany(ProductParameter::class, 'sku', 'sku')->orderBy('ordering', 'asc');
+        return $this->hasMany(ProductParameter::class, 'sku', 'sku')->orderBy('ordering');
     }
 }
