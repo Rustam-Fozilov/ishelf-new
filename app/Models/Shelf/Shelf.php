@@ -23,6 +23,8 @@ class Shelf extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
 
+    protected $table = 'shelves';
+
     protected $fillable = [
         'branch_id',
         'category_sku',

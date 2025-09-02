@@ -2,7 +2,6 @@
 
 namespace App\Services\Shelf;
 
-use App\Http\Requests\Shelf\ListRequest;
 use App\Models\Shelf\Shelf;
 use Illuminate\Support\Facades\DB;
 
@@ -46,6 +45,23 @@ class ShelfService
         return $list->whereIn('branch_id', auth()->user()->branches()->pluck('id')->toArray());
     }
 
+    public function getById(int $id)
+    {
+        $shelf = Shelf::query()
+            ->with([
+                'branches',
+                'category',
+                'phone_tables',
+                'updates','upload',
+                'phone_tables.phone_shelf_items',
+                'auto_ordering'
+            ])
+            ->findOrFail($id);
+
+        ShelfUpdateService::view($id);
+        return $shelf;
+    }
+
     public function add(array $params)
     {
         DB::beginTransaction();
@@ -65,6 +81,25 @@ class ShelfService
             return $shelf;
         } catch (\Throwable $e) {
             return throwResponse($e);
+        }
+    }
+
+    public function update(int $id, array $params): void
+    {
+        DB::beginTransaction();
+
+        try {
+            $checkService = new ShelfCheckService();
+            $checkService->checkUnique($params['branch_id'], $params['category_sku']);
+            $is_phone = $checkService->isPhone($params['category_sku']);
+
+            if ($is_phone) {
+                PhoneShelfService::create($id, $params['items']);
+            }
+
+            Shelf::query()->where('id', $id)->update($params);
+        } catch (\Throwable $e) {
+            throwResponse($e);
         }
     }
 }

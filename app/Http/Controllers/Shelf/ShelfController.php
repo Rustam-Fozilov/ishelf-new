@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Shelf\AddRequest;
 use App\Http\Requests\Shelf\ListRequest;
 use App\Http\Resources\Resource;
+use App\Models\Shelf\Shelf;
 use App\Services\RolePerm\PermissionService;
 use App\Services\Shelf\ShelfService;
 use Illuminate\Http\Request;
@@ -31,5 +32,19 @@ class ShelfController extends Controller
         $this->permissionService->isAllow('shelf.add', 1, true);
         $this->service->add($request->validated());
         return success();
+    }
+
+    public function update(int $id, AddRequest $request)
+    {
+        $this->permissionService->isAllow('shelf.update', 1, true);
+        $this->service->update($id, $request->validated());
+        return success();
+    }
+
+    public function getById(int $id)
+    {
+        $this->permissionService->isAllow('shelf.get', 1, true);
+        $data = $this->service->getById($id);
+        return success($data);
     }
 }
