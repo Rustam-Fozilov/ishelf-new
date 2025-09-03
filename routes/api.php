@@ -1,12 +1,13 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\RegionController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Shelf\ShelfController;
 use App\Http\Controllers\Shelf\ShelfStockPriorityController;
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', [AuthController::class, 'login']);
 
@@ -70,5 +71,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::get('oven', [AdminController::class, 'oven']);
             Route::get('heater', [AdminController::class, 'heater']);
         });
+    });
+
+    Route::group(['prefix' => 'branch'], function () {
+        Route::get('list', [BranchController::class, 'list']);
+        Route::post('change/status', [BranchController::class, 'changeStatus']);
     });
 });
