@@ -38,5 +38,10 @@ return [
     'invoice' => [
         'base_url' => env('INVOICE_BASE_URL'),
         'token' => env('INVOICE_TOKEN'),
-    ]
+    ],
+
+    'anketa' => [
+        'base_url' => env('ANKETA_BASE_URL'),
+        'token' => env('ANKETA_TOKEN'),
+    ],
 ];
