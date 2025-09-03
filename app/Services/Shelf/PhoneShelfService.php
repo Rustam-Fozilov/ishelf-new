@@ -13,21 +13,21 @@ class PhoneShelfService
 
         foreach ($items as $item) {
             $phone_shelf = PhoneShelf::query()->create([
-                'shelf_id' => $shelf_id,
-                'status_zone' => $item['status_zone'] ?? null,
+                'type'          => $item['type'],
+                'size'          => $item['size'] ?? null,
+                'shelf_id'      => $shelf_id,
+                'status_zone'   => $item['status_zone'] ?? null,
                 'product_count' => $item['product_count'] ?? null,
-                'type' => $item['type'],
-                'size' => $item['size'] ?? null,
             ]);
 
             if (isset($item['floor'])) {
                 for ($i = 0; $i < $item['floor']; $i++) {
                     PhoneShelfItem::query()->create([
+                        'size'           => $item['size'] ?? null,
+                        'floor'          => $i + 1,
+                        'status_zone'    => $item['status_zone'] ?? null,
+                        'product_count'  => $item['product_count'] ?? null,
                         'phone_shelf_id' => $phone_shelf->id,
-                        'size' => $item['size'] ?? null,
-                        'status_zone' => $item['status_zone'] ?? null,
-                        'product_count' => $item['product_count'] ?? null,
-                        'floor' => $i + 1,
                     ]);
                 }
             }

@@ -17,12 +17,12 @@ class PermissionService
         }
 
         $perm = Permission::query()->create([
-            'key' => $params['key'],
+            'key'       => $params['key'],
             'parent_id' => $params['parent_id'],
             'is_parent' => $params['is_parent'],
-            'title' => $params['title'],
-            'type' => $params['type'],
-            'options' => $params['options'] ?? null
+            'title'     => $params['title'],
+            'type'      => $params['type'],
+            'options'   => $params['options'] ?? null
         ]);
 
         self::addRolePermsWithPermission($perm);

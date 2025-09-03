@@ -4,7 +4,7 @@ namespace App\Services\User;
 
 use App\Http\Integrations\Invoice\InvoiceConnector;
 use App\Http\Integrations\Invoice\Requests\GetUserByPinflRequest;
-use App\Models\ProductCategory;
+use App\Models\Product\ProductCategory;
 use App\Models\User;
 
 class UserService

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Product\ProductCategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -76,5 +77,16 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'branch'], function () {
         Route::get('list', [BranchController::class, 'list']);
         Route::post('change/status', [BranchController::class, 'changeStatus']);
+    });
+
+    Route::group(['prefix' => 'category'], function () {
+        Route::get('list', [ProductCategoryController::class, 'list']);
+        Route::get('list/print_type', [ProductCategoryController::class, 'listPrintType']);
+        Route::get('list/price_tag', [ProductCategoryController::class, 'listPriceTag']);
+        Route::post('add/type',[ProductCategoryController::class, 'addType']);
+        Route::post('add/print_type', [ProductCategoryController::class, 'addPrintType']);
+        Route::get('type/list/{type}', [ProductCategoryController::class, 'typeList']);
+        Route::get('show/{id}', [ProductCategoryController::class, 'getItemById']);
+        Route::post('upload/attributes', [ProductCategoryController::class, 'uploadAttributes']);
     });
 });

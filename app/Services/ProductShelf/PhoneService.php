@@ -48,29 +48,29 @@ class PhoneService
 
     public static function tempAddEmptyProduct($shelf_id, $ordering, $place, $floor, $floor_ordering, $size): void
     {
-        $temp = new ProductShelfTemp();
-        $temp->shelf_id = $shelf_id;
-        $temp->ordering = $ordering;
-        $temp->floor_ordering = $floor_ordering;
-        $temp->place = $place;
-        $temp->floor = $floor;
-        $temp->size = $size;
-        $temp->is_sold = false;
-        $temp->sold_at = null;
-        $temp->save();
+        ProductShelfTemp::query()->create([
+            'size'           => $size,
+            'place'          => $place,
+            'floor'          => $floor,
+            'is_sold'        => false,
+            'sold_at'        => null,
+            'shelf_id'       => $shelf_id,
+            'ordering'       => $ordering,
+            'floor_ordering' => $floor_ordering,
+        ]);
     }
 
     public static function addEmptyProduct($shelf_id, $ordering, $place, $floor, $floor_ordering, $size): void
     {
-        $temp = new ProductShelf();
-        $temp->shelf_id = $shelf_id;
-        $temp->ordering = $ordering;
-        $temp->floor_ordering = $floor_ordering;
-        $temp->place = $place;
-        $temp->floor = $floor;
-        $temp->size = $size;
-        $temp->is_sold = false;
-        $temp->sold_at = null;
-        $temp->save();
+        ProductShelf::query()->create([
+            'size'           => $size,
+            'place'          => $place,
+            'floor'          => $floor,
+            'is_sold'        => false,
+            'sold_at'        => null,
+            'shelf_id'       => $shelf_id,
+            'ordering'       => $ordering,
+            'floor_ordering' => $floor_ordering,
+        ]);
     }
 }

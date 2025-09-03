@@ -8,10 +8,9 @@ class ShelfChangeService
 {
     public static function getLastChange(int $shelf_id, $with = []): ?ShelfChange
     {
-        return ShelfChange::query()
+        return ShelfChange::with($with)
             ->where('shelf_id', $shelf_id)
             ->orderBy('id', 'desc')
-            ->with($with)
             ->first();
     }
 }

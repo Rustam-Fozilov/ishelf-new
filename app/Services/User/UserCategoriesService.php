@@ -2,7 +2,7 @@
 
 namespace App\Services\User;
 
-use App\Models\UserCategories;
+use App\Models\User\UserCategories;
 
 class UserCategoriesService
 {

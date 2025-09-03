@@ -38,9 +38,9 @@ class ShelfStockPriorityService
 
         foreach ($skus as $item) {
             ShelfStockPriority::query()->create([
+                'sku'      => $item['sku'],
+                'order'    => $item['order'],
                 'shelf_id' => $shelf_id,
-                'order' => $item['order'],
-                'sku' => $item['sku'],
             ]);
         }
     }
@@ -51,8 +51,8 @@ class ShelfStockPriorityService
 
         foreach ($items as $item) {
             ShelfStockPriority::query()->create([
-                'shelf_id' => $shelf_id,
-                'floor' => $item['floor'],
+                'floor'     => $item['floor'],
+                'shelf_id'  => $shelf_id,
                 'brand_sku' => $item['brand_sku'],
             ]);
         }

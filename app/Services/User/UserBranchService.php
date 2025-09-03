@@ -2,7 +2,7 @@
 
 namespace App\Services\User;
 
-use App\Models\UserBranch;
+use App\Models\User\UserBranch;
 
 class UserBranchService
 {

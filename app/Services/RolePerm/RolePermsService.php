@@ -62,9 +62,7 @@ class RolePermsService
                         RolePerms::query()
                             ->where($field_A, $params['id'])
                             ->where($field_B, $allow[$field_B])
-                            ->update([
-                                'value' => $value
-                            ]);
+                            ->update(['value' => $value]);
                     }
                 }
             }
@@ -83,10 +81,10 @@ class RolePermsService
                 ->first();
 
             if (!$role_perms) $role_perms = RolePerms::query()->create([
-                'role_id' => $role->id,
+                'role_id'       => $role->id,
                 'permission_id' => $permission->id,
-                'key' => $permission->key,
-                'value' => "0",
+                'key'           => $permission->key,
+                'value'         => "0",
             ]);
 
             $role_perms->role = $role;
@@ -126,10 +124,10 @@ class RolePermsService
                     ->first();
 
                 if (!$role_perms) $role_perms = RolePerms::query()->create([
-                    'role_id' => $role->id,
+                    'role_id'       => $role->id,
                     'permission_id' => $permission->id,
-                    'key' => $permission->key,
-                    'value' => "0",
+                    'key'           => $permission->key,
+                    'value'         => "0",
                 ]);
 
                 $role_perms->permission = $permission;
@@ -155,10 +153,10 @@ class RolePermsService
             if (!$permission) return false;
 
             $rolePerms = RolePerms::query()->create([
-                'role_id' => $role_id,
+                'role_id'       => $role_id,
                 'permission_id' => $permission->id,
-                'key' => $key,
-                'value' => 0
+                'key'           => $key,
+                'value'         => 0
             ]);
         }
 
