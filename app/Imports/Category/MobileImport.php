@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Imports\Category;
+
+use App\Models\Product\Product;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
+
+class MobileImport implements ToCollection
+{
+    /**
+    * @param Collection $collection
+    */
+    public function collection(Collection $collection): void
+    {
+        foreach ($collection as $index => $item) {
+            if ($index === 0) continue;
+
+            $sku = $item[1];
+            $sku = str_replace(["\u{A0}", " ", ","], '', $sku);
+
+            $product = Product::query()->where('sku', $sku)->first();
+            $ram = str_replace(['GB', 'Gb', 'gb', 'MB', 'Mb', 'mb'], '', $item[6]);
+            $storage = str_replace(['GB', 'Gb', 'gb', 'MB', 'Mb', 'mb'], '', $item[7]);
+
+            if ($product) {
+                $product->attribute()->updateOrCreate(
+                    [
+                        'category_sku' => $product->category_sku
+                    ],
+                    [
+                        'ram' => $ram, // ram
+                        'storage' => $storage, // storage
+                    ]
+                );
+            }
+        }
+    }
+}

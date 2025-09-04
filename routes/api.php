@@ -83,10 +83,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('list', [ProductCategoryController::class, 'list']);
         Route::get('list/print_type', [ProductCategoryController::class, 'listPrintType']);
         Route::get('list/price_tag', [ProductCategoryController::class, 'listPriceTag']);
+        Route::get('show/{id}', [ProductCategoryController::class, 'show']);
         Route::post('add/type',[ProductCategoryController::class, 'addType']);
         Route::post('add/print_type', [ProductCategoryController::class, 'addPrintType']);
         Route::get('type/list/{type}', [ProductCategoryController::class, 'typeList']);
-        Route::get('show/{id}', [ProductCategoryController::class, 'getItemById']);
         Route::post('upload/attributes', [ProductCategoryController::class, 'uploadAttributes']);
     });
 });

@@ -13,7 +13,13 @@ class ProductCategory extends Model
 {
     protected $table = 'product_categories';
 
-    protected $fillable = ['sku','title','skuname', 'print_type'];
+    protected $fillable = [
+        'sku',
+        'type',
+        'title',
+        'skuname',
+        'print_type'
+    ];
 
     public function products():HasMany
     {
