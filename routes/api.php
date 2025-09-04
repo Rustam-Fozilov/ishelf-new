@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\Product\ProductCategoryController;
+use App\Http\Controllers\Category\CategoryBrandController;
+use App\Http\Controllers\Stock\StockController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Shelf\ShelfController;
 use App\Http\Controllers\Shelf\ShelfStockPriorityController;
+use App\Http\Controllers\Category\ProductCategoryController;
 
 Route::post('auth/login', [AuthController::class, 'login']);
 
@@ -88,5 +90,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('add/print_type', [ProductCategoryController::class, 'addPrintType']);
         Route::get('type/list/{type}', [ProductCategoryController::class, 'typeList']);
         Route::post('upload/attributes', [ProductCategoryController::class, 'uploadAttributes']);
+    });
+
+    Route::group(['prefix' => 'category_brand'], function () {
+        Route::get('list/{category_sku}', [CategoryBrandController::class, 'list']);
+    });
+
+    Route::group(['prefix' => 'stock'], function () {
+        Route::get('sync', [StockController::class, 'syncStock']);
     });
 });
