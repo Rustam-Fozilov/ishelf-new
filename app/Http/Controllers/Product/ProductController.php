@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\ListRequest;
+use App\Http\Resources\Resource;
 use App\Jobs\Product\ProductSyncJob;
 use App\Services\Product\ProductLogService;
 use App\Services\Product\ProductService;
@@ -32,7 +34,13 @@ class ProductController extends Controller
         return success();
     }
 
-    public function list(Request $request)
+    public function list(ListRequest $request)
+    {
+        $data = $this->service->list($request->all());
+        return new Resource($data);
+    }
+
+    public function show(int $id)
     {
 
     }

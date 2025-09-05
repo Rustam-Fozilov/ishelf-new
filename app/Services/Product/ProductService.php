@@ -145,4 +145,29 @@ class ProductService
             ]
         );
     }
+
+    public function list(array $params)
+    {
+        $status = $params['status'] ?? null;
+        $search = $params['search'] ?? null;
+
+        return Product::with(['attribute', 'child.attribute'])
+            ->whereNull('parent_sku')
+            ->when(!is_null($status), function ($query) use ($status) {
+                $query->whereHas('attribute', function ($query) use ($status) {
+                    if ($status == 1) $query->where('status', $status);
+                    if ($status == 2) $query->whereIn('status', [2, 3])->orWhereNull('status');
+                });
+            })
+            ->when(isset($params['category_sku']), function ($query) use ($params) {
+                $query->where('category_sku', $params['category_sku']);
+            })
+            ->when(!is_null($search), function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . translit($search)['lat'] . '%')
+                        ->orWhere('name', 'like', '%' . translit($search)['lat'] . '%');
+                });
+            })
+            ->paginate($params['per_page'] ?? 10);
+    }
 }
