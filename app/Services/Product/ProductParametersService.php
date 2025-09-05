@@ -32,6 +32,20 @@ class ProductParametersService
             ->get();
     }
 
+    public static function update(array $data): void
+    {
+        foreach ($data['parameters'] as $item) {
+            $parameter = Parameter::query()->where('category_sku', $data['category_sku'])->where('key', $item['key'])->first();
+            $parameter->update([
+                'name' => $item['name'] ?? null,
+                'short_name' => $item['short_name'] ?? null,
+                'ordering' => $item['ordering'] ?? null,
+                'icon_id' => $item['icon_id'] ?? null,
+            ]);
+            $parameter->products()->update(['ordering' => $item['ordering'] ?? null]);
+        }
+    }
+
     public static function getParametersFromIdea(Product $product)
     {
         $connector = new IdeaConnector();

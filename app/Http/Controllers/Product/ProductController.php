@@ -31,4 +31,9 @@ class ProductController extends Controller
         $this->logService->deleteExcessLogs();
         return success();
     }
+
+    public function list(Request $request)
+    {
+
+    }
 }

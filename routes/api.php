@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Category\CategoryBrandController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Product\ProductParameterController;
 use App\Http\Controllers\Stock\StockController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -105,5 +106,18 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'stock'], function () {
         Route::get('sync', [StockController::class, 'syncStock']);
+    });
+
+    Route::group(['prefix' => 'product'], function () {
+        Route::get('list', [ProductController::class, 'list']);
+        Route::get('get/{id}', [ProductController::class, 'show']);
+        Route::put('update/{id}', [ProductController::class, 'update']);
+        Route::put('toggle/status', [ProductController::class, 'toggleStatus']);
+        Route::post('family', [ProductController::class, 'family']);
+
+        Route::prefix('parameters')->group(function () {
+            Route::get('list', [ProductParameterController::class, 'list']);
+            Route::put('update', [ProductParameterController::class, 'update']);
+        });
     });
 });
