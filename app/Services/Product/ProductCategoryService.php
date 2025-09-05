@@ -23,6 +23,19 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ProductCategoryService
 {
+    public static function create(int $category_sku, string $title, int $skuname)
+    {
+        return ProductCategory::query()->updateOrCreate(
+            [
+                'sku' => $category_sku
+            ],
+            [
+                'title'   => $title,
+                'skuname' => $skuname
+            ]
+        );
+    }
+
     public function list(array $params): LengthAwarePaginator
     {
         $search = $params['search'] ?? null;
@@ -127,9 +140,9 @@ class ProductCategoryService
 
         $role = Role::query()->find(auth()->user()->role_id);
         $branches = auth()->user()->branches()->with(['region'])->where('status', 1)->get();
-        $all_categories = $type == 0 ? ProductCategory::query()->whereIn('type', [1, 2, 3]) : ProductCategory::query()->where('type', $type);
         $category_skus = auth()->user()->categories()->pluck('sku')->toArray();
 
+        $all_categories = $type == 0 ? ProductCategory::query()->whereIn('type', [1, 2, 3]) : ProductCategory::query()->where('type', $type);
         if ($role->category_must_be_added == 1) $all_categories->whereIn('sku', $category_skus);
         $all_categories = $all_categories->get(['id', 'sku', 'title']);
 

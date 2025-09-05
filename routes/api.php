@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Category\CategoryBrandController;
+use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Stock\StockController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -11,6 +12,12 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Shelf\ShelfController;
 use App\Http\Controllers\Shelf\ShelfStockPriorityController;
 use App\Http\Controllers\Category\ProductCategoryController;
+
+Route::group(['middleware' => 'projects_token'], function () {
+    Route::post('product_log', [ProductController::class, 'productLog']);
+    Route::post('price_tag', [ProductController::class, 'createPriceTag']);
+    Route::post('price_months', [ProductController::class, 'createPriceMonths']);
+});
 
 Route::post('auth/login', [AuthController::class, 'login']);
 
