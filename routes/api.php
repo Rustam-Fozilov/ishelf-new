@@ -4,6 +4,7 @@ use App\Http\Controllers\Category\CategoryBrandController;
 use App\Http\Controllers\PrintLog\PrintLogController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ProductParameterController;
+use App\Http\Controllers\Shelf\ShelfTempController;
 use App\Http\Controllers\Stock\StockController;
 use App\Http\Controllers\Upload\MMLController;
 use App\Http\Controllers\Upload\UploadController;
@@ -136,5 +137,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('create', [PrintLogController::class, 'create']);
         Route::get('list/top', [PrintLogController::class, 'top']);
         Route::get('list/{shelf_id}', [PrintLogController::class, 'listByShelf']);
+    });
+
+    Route::group(['prefix' => 'ordering/temp'], function () {
+        Route::get('product/{id}',[ShelfTempController::class, 'getTempByShelfId']);
+        Route::post('add/product',[ShelfTempController::class, 'tempAddProduct']);
+        Route::delete('delete/product/{temp_id}',[ShelfTempController::class, 'deleteTempProduct']);
+        Route::post('auto', [ShelfTempController::class, 'makeAutoOrdering']);
+        Route::post('auto/props/save', [ShelfTempController::class, 'saveAutoOrderingProps']);
+        Route::delete('auto/props/delete/{shelf_id}', [ShelfTempController::class, 'deleteAutoOrderingProps']);
     });
 });

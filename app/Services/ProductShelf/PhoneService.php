@@ -2,11 +2,13 @@
 
 namespace App\Services\ProductShelf;
 
+use App\Interfaces\ProductShelfInterface;
 use App\Models\Shelf\PhoneShelf;
 use App\Models\Shelf\ProductShelf;
 use App\Models\Shelf\ProductShelfTemp;
+use App\Models\Shelf\Shelf;
 
-class PhoneService
+class PhoneService implements ProductShelfInterface
 {
     public static float $default = 1;
 
@@ -72,5 +74,25 @@ class PhoneService
             'ordering'       => $ordering,
             'floor_ordering' => $floor_ordering,
         ]);
+    }
+
+    public function createTemp(Shelf $shelf): void
+    {
+        // TODO: Implement createTemp() method.
+    }
+
+    public function tempAddProduct(array $data): void
+    {
+        // TODO: Implement tempAddProduct() method.
+    }
+
+    public function deleteTempProduct(ProductShelfTemp $temp): void
+    {
+        // TODO: Implement deleteTempProduct() method.
+    }
+
+    public function tempAutoOrderProduct(Shelf $shelf, array $priority)
+    {
+        // TODO: Implement tempAutoOrderProduct() method.
     }
 }

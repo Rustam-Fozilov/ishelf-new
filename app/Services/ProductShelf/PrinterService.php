@@ -6,8 +6,9 @@ use App\Interfaces\ProductShelfInterface;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
 
-class TvService implements ProductShelfInterface
+class PrinterService implements ProductShelfInterface
 {
+
     public function createTemp(Shelf $shelf): void
     {
         // TODO: Implement createTemp() method.

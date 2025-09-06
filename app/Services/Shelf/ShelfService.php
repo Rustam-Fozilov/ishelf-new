@@ -56,7 +56,7 @@ class ShelfService
                 'branches',
                 'category',
                 'phone_tables',
-                'updates','upload',
+                'upload',
                 'phone_tables.phone_shelf_items',
                 'auto_ordering'
             ])

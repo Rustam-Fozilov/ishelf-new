@@ -21,10 +21,15 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('web')
                 ->prefix($lang)
                 ->group(base_path('routes/web.php'));
+
+            Route::middleware('admin')
+                ->prefix('test')
+                ->group(base_path('routes/test.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'admin'          => \App\Http\Middleware\AdminMiddleware::class,
             'projects_token' => \App\Http\Middleware\ProjectsTokenMiddleware::class,
         ]);
 
