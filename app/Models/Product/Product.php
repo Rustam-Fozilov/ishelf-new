@@ -26,6 +26,7 @@ class Product extends Model
         'brand_sku',
         'status',
         'url',
+        'parent_sku',
     ];
 
     public function attribute():HasOne

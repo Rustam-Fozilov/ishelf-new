@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\ListRequest;
+use App\Http\Requests\Product\MakeFamilyRequest;
+use App\Http\Requests\Product\ToggleStatusRequest;
+use App\Http\Requests\Product\UpdateRequest;
 use App\Http\Resources\Resource;
 use App\Jobs\Product\ProductSyncJob;
 use App\Services\Product\ProductLogService;
@@ -42,6 +45,25 @@ class ProductController extends Controller
 
     public function show(int $id)
     {
+        $data = $this->service->show($id, ['attribute', 'category']);
+        return success($data);
+    }
 
+    public function update(int $id, UpdateRequest $request)
+    {
+        $this->service->updateAttribute($id, $request->validated());
+        return success();
+    }
+
+    public function toggleStatus(ToggleStatusRequest $request)
+    {
+        $this->service->toggleStatus($request->validated());
+        return success();
+    }
+
+    public function family(MakeFamilyRequest $request)
+    {
+        $this->service->family($request->validated());
+        return success();
     }
 }

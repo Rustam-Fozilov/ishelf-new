@@ -7,12 +7,14 @@ use App\Jobs\Stock\SendNewStockToBotJob;
 use App\Jobs\Stock\SendStockToBotJob;
 use App\Models\Branch;
 use App\Models\Product\Product;
+use App\Models\Product\ProductAttribute;
 use App\Models\Product\ProductLog;
 use App\Models\Shelf\ProductShelf;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
 use App\Models\Stock\StockByBranch;
 use App\Services\Stock\StockByBranchService;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 
 class ProductService
@@ -146,7 +148,7 @@ class ProductService
         );
     }
 
-    public function list(array $params)
+    public function list(array $params): LengthAwarePaginator
     {
         $status = $params['status'] ?? null;
         $search = $params['search'] ?? null;
@@ -169,5 +171,47 @@ class ProductService
                 });
             })
             ->paginate($params['per_page'] ?? 10);
+    }
+
+    public function show(int $id, array $with = [])
+    {
+        return Product::with($with)->find($id);
+    }
+
+    public function updateAttribute(int $id, array $params): void
+    {
+        $product = Product::query()->findOrFail($id);
+        ProductAttribute::query()->updateOrCreate(
+            ['sku' => $product->sku],
+            [
+                'category_sku' => $product->category_sku,
+                ...$params,
+            ]
+        );
+    }
+
+    public function toggleStatus(array $params): void
+    {
+        Product::query()->where('sku', $params['sku'])->update(['status' => $params['status']]);
+    }
+
+    public function family(array $params): void
+    {
+        $parentIndex = array_search(1, array_column($params['skus'], 'order'));
+        $parent = Product::query()
+            ->where('sku', $params['skus'][$parentIndex]['sku'])
+            ->first();
+
+        array_splice($params['skus'], $parentIndex, 1);
+        foreach ($params['skus'] as $item) {
+            Product::query()
+                ->where('sku', $item['sku'])
+                ->update(['parent_sku' => $parent->sku]);
+        }
+
+        if ($parent->parent_sku) {
+            $parent->parent_sku = null;
+            $parent->save();
+        }
     }
 }
