@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Category\CategoryBrandController;
+use App\Http\Controllers\PrintLog\PrintLogController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ProductParameterController;
 use App\Http\Controllers\Stock\StockController;
+use App\Http\Controllers\Upload\MMLController;
+use App\Http\Controllers\Upload\UploadController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -119,5 +122,19 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::get('list', [ProductParameterController::class, 'list']);
             Route::put('update', [ProductParameterController::class, 'update']);
         });
+    });
+
+    Route::group(['prefix' => 'upload'], function () {
+        Route::post('image', [UploadController::class, 'upload'])->name('upload.image');
+        Route::post('excel', [UploadController::class, 'upload'])->name('upload.excel');
+        Route::post('file', [UploadController::class, 'upload'])->name('upload.file');
+
+        Route::post('mml', [MMLController::class, 'uploadFile']);
+    });
+
+    Route::group(['prefix' => 'print'], function () {
+        Route::post('create', [PrintLogController::class, 'create']);
+        Route::get('list/top', [PrintLogController::class, 'top']);
+        Route::get('list/{shelf_id}', [PrintLogController::class, 'listByShelf']);
     });
 });
