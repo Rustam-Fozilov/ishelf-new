@@ -16,6 +16,8 @@ class AddRequest extends FormRequest
             'branch_id'             => 'required|integer|exists:branches,id',
             'product_count'         => $type == 5 ? 'required|integer' : 'nullable|integer',
             'floor'                 => in_array($type, [1, 2, 3, 4, 8]) ? 'required|integer' : 'nullable|integer',
+            'floor_left'            => 'nullable|integer|min:1|max:100',
+            'floor_right'           => 'nullable|integer|min:1|max:100',
             'size'                  => in_array($type, [1, 2, 3, 4]) ? 'required|integer' : 'nullable|integer',
             'left_size'             => in_array($type, [2, 3]) ? 'required|integer' : 'nullable|integer',
             'right_size'            => in_array($type, [3, 4]) ? 'required|integer' : 'nullable|integer',

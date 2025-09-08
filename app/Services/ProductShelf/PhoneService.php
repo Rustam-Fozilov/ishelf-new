@@ -7,6 +7,7 @@ use App\Models\Shelf\PhoneShelf;
 use App\Models\Shelf\ProductShelf;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
+use App\Services\Shelf\ShelfTempService;
 
 class PhoneService implements ProductShelfInterface
 {
@@ -38,7 +39,7 @@ class PhoneService implements ProductShelfInterface
             $length = $length - self::$default;
             if ($length < 0) break;
 
-            self::tempAddEmptyProduct($shelf_id, $ordering, $place, $floor, $i, self::$default);
+            ShelfTempService::tempAddEmptyProduct($shelf_id, $ordering, $place, $floor, $i, self::$default);
             if ($add_prod) self::addEmptyProduct($shelf_id, $ordering, $place, $floor, $i, self::$default);
 
             $ordering++;
@@ -46,20 +47,6 @@ class PhoneService implements ProductShelfInterface
         }
 
         return $ordering;
-    }
-
-    public static function tempAddEmptyProduct($shelf_id, $ordering, $place, $floor, $floor_ordering, $size): void
-    {
-        ProductShelfTemp::query()->create([
-            'size'           => $size,
-            'place'          => $place,
-            'floor'          => $floor,
-            'is_sold'        => false,
-            'sold_at'        => null,
-            'shelf_id'       => $shelf_id,
-            'ordering'       => $ordering,
-            'floor_ordering' => $floor_ordering,
-        ]);
     }
 
     public static function addEmptyProduct($shelf_id, $ordering, $place, $floor, $floor_ordering, $size): void

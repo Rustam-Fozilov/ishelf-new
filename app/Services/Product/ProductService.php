@@ -178,6 +178,11 @@ class ProductService
         return Product::with($with)->find($id);
     }
 
+    public static function getBySku(int $sku): ?Product
+    {
+        return Product::query()->where('sku', $sku)->first();
+    }
+
     public function updateAttribute(int $id, array $params): void
     {
         $product = Product::query()->findOrFail($id);

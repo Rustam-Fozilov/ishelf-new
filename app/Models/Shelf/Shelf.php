@@ -26,6 +26,8 @@ class Shelf extends Model implements Auditable
         'category_sku',
         'type',
         'floor',
+        'floor_right',
+        'floor_left',
         'size',
         'is_paddon',
         'paddon_quantity',

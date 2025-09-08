@@ -38,4 +38,9 @@ class PhoneShelfService
     {
         PhoneShelf::query()->where('shelf_id', $shelf_id)->delete();
     }
+
+    public static function getPhoneShelfByShelfId(int $shelf_id, array|string $with = [])
+    {
+        return PhoneShelf::query()->where('shelf_id', $shelf_id)->with($with)->get();
+    }
 }
