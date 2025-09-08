@@ -2,12 +2,12 @@
 
 namespace App\Services\Shelf;
 
-use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
-use App\Models\Shelf\ShelfStockPriority;
-use App\Interfaces\ProductShelfInterface;
 use App\Models\Shelf\ShelvesTemp;
 use App\Models\Stock\StockByBranch;
+use App\Models\Shelf\ProductShelfTemp;
+use App\Models\Shelf\ShelfStockPriority;
+use App\Interfaces\ProductShelfInterface;
 use App\Services\ProductShelf\TvService;
 use App\Services\ProductShelf\PhoneService;
 use App\Services\ProductShelf\LaptopService;
