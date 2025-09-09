@@ -21,18 +21,6 @@ class WashingService implements ProductShelfInterface
             $ordering = $tempService->dialProduct($shelf->id, $i, 'center', $shelf->size, $ordering, 1);
         }
 
-        for ($i = 1; $shelf->floor_left + 1 > $i; $i++) {
-            if (!is_null($shelf->left_size)) {
-                $ordering = $tempService->dialProduct($shelf->id, $i, 'left', $shelf->left_size, $ordering, 1);
-            }
-        }
-
-        for ($i = 1; $shelf->floor_right + 1 > $i; $i++) {
-            if (!is_null($shelf->right_size)) {
-                $ordering = $tempService->dialProduct($shelf->id, $i, 'right', $shelf->right_size, $ordering, 1);
-            }
-        }
-
         if ($shelf->is_paddon) {
             for ($i = 1; $i < $shelf->paddon_quantity + 1; $i++) {
                 $size = ($shelf->paddon_front_quantity * $this->default) + ($shelf->paddon_front_quantity * $this->space);
@@ -48,7 +36,7 @@ class WashingService implements ProductShelfInterface
 
     public function tempAddProduct(array $data): void
     {
-        // TODO: Implement tempAddProduct() method.
+        ShelfTempService::tempAddProduct($data);
     }
 
     public function deleteTempProduct(ProductShelfTemp $temp): void

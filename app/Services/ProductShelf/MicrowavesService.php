@@ -41,7 +41,7 @@ class MicrowavesService implements ProductShelfInterface
 
     public function tempAddProduct(array $data): void
     {
-        // TODO: Implement tempAddProduct() method.
+        ShelfTempService::tempAddProduct($data);
     }
 
     public function deleteTempProduct(ProductShelfTemp $temp): void

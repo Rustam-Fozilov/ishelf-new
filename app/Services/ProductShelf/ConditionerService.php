@@ -2,12 +2,10 @@
 
 namespace App\Services\ProductShelf;
 
-use App\Interfaces\ProductShelfInterface;
-use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
-use App\Services\Product\ProductService;
+use App\Models\Shelf\ProductShelfTemp;
 use App\Services\Shelf\ShelfTempService;
-use Illuminate\Support\Facades\DB;
+use App\Interfaces\ProductShelfInterface;
 
 class ConditionerService implements ProductShelfInterface
 {
@@ -28,26 +26,7 @@ class ConditionerService implements ProductShelfInterface
 
     public function tempAddProduct(array $data): void
     {
-        $prod = ProductService::getBySku($data['sku']);
-        if ($data['shelf']['category_sku'] !== $prod->category_sku) throwError(__('shelf.shelf_not_match_category'));
-
-        ShelfTempService::checkDublProduct($data);
-
-        DB::beginTransaction();
-        try {
-            $temp = ProductShelfTemp::query()->where('id', $data['temp_id'])->first();
-            if (!is_null($temp->sku)) throwError(__('shelf.product_exist'));
-
-            $temp->update([
-                'sku'     => $data['sku'],
-                'is_sold' => false,
-                'sold_at' => null,
-            ]);
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            throwResponse($e);
-        }
+        ShelfTempService::tempAddProduct($data);
     }
 
     public function deleteTempProduct(ProductShelfTemp $temp): void

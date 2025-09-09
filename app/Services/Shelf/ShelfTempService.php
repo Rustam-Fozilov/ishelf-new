@@ -8,6 +8,8 @@ use App\Models\Stock\StockByBranch;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\ShelfStockPriority;
 use App\Interfaces\ProductShelfInterface;
+use App\Services\Category\CategoryAttachService;
+use App\Services\Product\ProductService;
 use App\Services\ProductShelf\TvService;
 use App\Services\ProductShelf\PhoneService;
 use App\Services\ProductShelf\LaptopService;
@@ -20,6 +22,7 @@ use App\Services\ProductShelf\ConditionerService;
 use App\Services\ProductShelf\WaterHeaterService;
 use App\Services\ProductShelf\RefrigeratorService;
 use App\Services\ProductShelf\VacuumCleanerService;
+use Illuminate\Support\Facades\DB;
 
 class ShelfTempService
 {
@@ -122,6 +125,36 @@ class ShelfTempService
         $shelf = Shelf::query()->find($params['shelf_id']);
         $params['shelf'] = $shelf;
         $this->productService->tempAddProduct($params);
+    }
+
+    public static function tempAddProduct(array $data): void
+    {
+        $prod = ProductService::getBySku($data['sku']);
+        $skus = CategoryAttachService::getAttachSku($data['shelf']->category_sku);
+
+        if (empty($skus)) {
+            $skus = [$data['shelf']['category_sku']];
+        }
+
+        if (!in_array($prod->category_sku, $skus)) throwError(__('shelf.shelf_not_match_category'));
+
+        self::checkDublProduct($data);
+
+        DB::beginTransaction();
+        try {
+            $temp = ProductShelfTemp::query()->where('id', $data['temp_id'])->first();
+            if (!is_null($temp->sku)) throwError(__('shelf.product_exist'));
+
+            $temp->update([
+                'sku'     => $data['sku'],
+                'is_sold' => false,
+                'sold_at' => null,
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            throwResponse($e);
+        }
     }
 
     public function dialProduct($shelf_id, $floor, $place, $length, $ordering, $floor_ordering, $add_temp = true)
