@@ -230,7 +230,7 @@ class AdminController extends Controller
         return success();
     }
 
-    public function syncBySku(int $sku): void
+    public static function syncBySku(int $sku): void
     {
         $product = Product::query()->where('sku', $sku)->first();
         if ($product) dispatch(new SyncAttributesJob($product));
