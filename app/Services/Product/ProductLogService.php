@@ -2,6 +2,7 @@
 
 namespace App\Services\Product;
 
+use App\Models\PriceTag\PriceTagLog;
 use App\Models\Product\ProductLog;
 
 class ProductLogService
@@ -24,6 +25,18 @@ class ProductLogService
             ->pluck('id');
 
         ProductLog::query()
+            ->whereNotIn('id', $logs_id)
+            ->delete();
+    }
+
+    public function deleteExcessPriceTagLogs(): void
+    {
+        $logs_id = PriceTagLog::query()
+            ->orderByDesc('id')
+            ->limit(5)
+            ->pluck('id');
+
+        PriceTagLog::query()
             ->whereNotIn('id', $logs_id)
             ->delete();
     }

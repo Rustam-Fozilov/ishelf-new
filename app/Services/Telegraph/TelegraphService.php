@@ -2,13 +2,14 @@
 
 namespace App\Services\Telegraph;
 
-use App\Models\Telegram\BotAction;
 use App\Models\User;
+use Illuminate\Support\Carbon;
+use App\Models\Telegram\BotAction;
 use DefStudio\Telegraph\DTO\Message;
 use DefStudio\Telegraph\Keyboard\Button;
 use DefStudio\Telegraph\Keyboard\Keyboard;
 use DefStudio\Telegraph\Models\TelegraphChat;
-use Illuminate\Support\Carbon;
+use DefStudio\Telegraph\Client\TelegraphResponse;
 
 class TelegraphService
 {
@@ -24,7 +25,7 @@ class TelegraphService
         $this->chat = $chat;
     }
 
-    public function storePhoneNumber()
+    public function storePhoneNumber(): TelegraphResponse
     {
         $phone = $this->message->contact()->phoneNumber();
 
