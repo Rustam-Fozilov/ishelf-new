@@ -31,10 +31,7 @@ class ConditionerService implements ProductShelfInterface
 
     public function deleteTempProduct(ProductShelfTemp $temp): void
     {
-        $temp->sku = null;
-        $temp->is_sold = false;
-        $temp->sold_at = null;
-        $temp->save();
+        ShelfTempService::deleteProductByTemp($temp);
     }
 
     public function tempAutoOrderProduct(Shelf $shelf, array $priority)

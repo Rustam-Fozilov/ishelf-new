@@ -214,6 +214,20 @@ class ShelfTempService
         $check->save();
     }
 
+    public function deleteTempProduct(int $temp_id): void
+    {
+        $temp = ProductShelfTemp::query()->findOrFail($temp_id);
+        $this->productService->deleteTempProduct($temp);
+    }
+
+    public static function deleteProductByTemp(ProductShelfTemp $temp): void
+    {
+        $temp->sku = null;
+        $temp->is_sold = false;
+        $temp->sold_at = null;
+        $temp->save();
+    }
+
     public static function checkDublProduct(array $data): void
     {
         $token = $data['shelf']->branches->token;

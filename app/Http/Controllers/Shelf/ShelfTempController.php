@@ -26,4 +26,10 @@ class ShelfTempController extends Controller
         $this->service->addProduct($request->validated());
         return success();
     }
+
+    public function deleteTempProduct(int $temp_id)
+    {
+        $this->service->deleteTempProduct($temp_id);
+        return success();
+    }
 }

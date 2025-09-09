@@ -31,7 +31,7 @@ class WaterHeaterService implements ProductShelfInterface
 
     public function deleteTempProduct(ProductShelfTemp $temp): void
     {
-        // TODO: Implement deleteTempProduct() method.
+        ShelfTempService::deleteProductByTemp($temp);
     }
 
     public function tempAutoOrderProduct(Shelf $shelf, array $priority)
