@@ -4,6 +4,7 @@ namespace App\Interfaces;
 
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
+use Illuminate\Database\Eloquent\Collection;
 
 interface ProductShelfInterface
 {
@@ -13,5 +14,5 @@ interface ProductShelfInterface
 
     public function deleteTempProduct(ProductShelfTemp $temp): void;
 
-    public function tempAutoOrderProduct(Shelf $shelf, array $priority);
+    public function tempAutoOrderProduct(Shelf $shelf, array $priority): Collection;
 }

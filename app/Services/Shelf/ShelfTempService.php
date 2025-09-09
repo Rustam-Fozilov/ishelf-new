@@ -2,14 +2,14 @@
 
 namespace App\Services\Shelf;
 
+use App\Models\Branch;
+use App\Models\Product\Product;
 use App\Models\Shelf\Shelf;
 use App\Models\Shelf\ShelvesTemp;
-use App\Models\Stock\StockByBranch;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\ShelfStockPriority;
 use App\Interfaces\ProductShelfInterface;
-use App\Services\Category\CategoryAttachService;
-use App\Services\Product\ProductService;
+use App\Models\Stock\StockByBranch;
 use App\Services\ProductShelf\TvService;
 use App\Services\ProductShelf\PhoneService;
 use App\Services\ProductShelf\LaptopService;
@@ -22,7 +22,7 @@ use App\Services\ProductShelf\ConditionerService;
 use App\Services\ProductShelf\WaterHeaterService;
 use App\Services\ProductShelf\RefrigeratorService;
 use App\Services\ProductShelf\VacuumCleanerService;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Collection;
 
 class ShelfTempService
 {
@@ -90,7 +90,7 @@ class ShelfTempService
         }
     }
 
-    public function getTempByShelfId(int $shelf_id)
+    public function getTempByShelfId(int $shelf_id): Collection
     {
         $temp = ProductShelfTemp::with(['product','product_attr'])->where('shelf_id', $shelf_id)->get();
         $priority_products = ShelfStockPriority::with(['product', 'product_attr'])->where('shelf_id', $shelf_id)->get();
@@ -125,36 +125,6 @@ class ShelfTempService
         $shelf = Shelf::query()->find($params['shelf_id']);
         $params['shelf'] = $shelf;
         $this->productService->tempAddProduct($params);
-    }
-
-    public static function tempAddProduct(array $data): void
-    {
-        $prod = ProductService::getBySku($data['sku']);
-        $skus = CategoryAttachService::getAttachSku($data['shelf']->category_sku);
-
-        if (empty($skus)) {
-            $skus = [$data['shelf']['category_sku']];
-        }
-
-        if (!in_array($prod->category_sku, $skus)) throwError(__('shelf.shelf_not_match_category'));
-
-        self::checkDublProduct($data);
-
-        DB::beginTransaction();
-        try {
-            $temp = ProductShelfTemp::query()->where('id', $data['temp_id'])->first();
-            if (!is_null($temp->sku)) throwError(__('shelf.product_exist'));
-
-            $temp->update([
-                'sku'     => $data['sku'],
-                'is_sold' => false,
-                'sold_at' => null,
-            ]);
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            throwResponse($e);
-        }
     }
 
     public function dialProduct($shelf_id, $floor, $place, $length, $ordering, $floor_ordering, $add_temp = true)
@@ -220,27 +190,26 @@ class ShelfTempService
         $this->productService->deleteTempProduct($temp);
     }
 
-    public static function deleteProductByTemp(ProductShelfTemp $temp): void
+    public function autoOrdering(array $params): Collection
     {
-        $temp->sku = null;
-        $temp->is_sold = false;
-        $temp->sold_at = null;
-        $temp->save();
+        $shelf = Shelf::query()->where('status', 1)->findOrFail($params['shelf_id']);
+        return $this->productService->tempAutoOrderProduct($shelf, $params['order_priority']);
     }
 
-    public static function checkDublProduct(array $data): void
+    public static function getStocksForShelf(Shelf $shelf)
     {
-        $token = $data['shelf']->branches->token;
-        $prodCount = ProductShelfTemp::query()->where('shelf_id', $data['shelf']->id)->where('sku', $data['sku'])->count();
-        $stockCount = (new StockByBranch())
-            ->setTable($token)
+        $branch = Branch::query()->where('id', $shelf->branch_id)->first();
+        $stock = (new StockByBranch())
+            ->setTable($branch->token)
             ->newQuery()
-            ->where('sku', $data['sku'])
-            ->select('quantity')
-            ->first();
+            ->where('category_sku', $shelf->category_sku)
+            ->get();
 
-        if (!is_null($stockCount) && $prodCount >= $stockCount->quantity) {
-            throwError(__('errors.out_of_stock'));
-        }
+        return Product::query()
+            ->join('product_attributes', 'products.sku', '=', 'product_attributes.sku')
+            ->whereNull('products.parent_sku')
+            ->where('products.status', 1)
+            ->whereIn('products.sku', $stock->pluck('sku')->toArray())
+            ->distinct('products.sku');
     }
 }

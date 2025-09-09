@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Shelf;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductShelfTemp\AddProductRequest;
+use App\Http\Requests\ProductShelfTemp\AutoOrderingRequest;
 use App\Services\Shelf\ShelfTempService;
 use Illuminate\Http\Request;
 
@@ -31,5 +32,11 @@ class ShelfTempController extends Controller
     {
         $this->service->deleteTempProduct($temp_id);
         return success();
+    }
+
+    public function makeAutoOrdering(AutoOrderingRequest $request)
+    {
+        $data = $this->service->autoOrdering($request->validated());
+        return success($data);
     }
 }

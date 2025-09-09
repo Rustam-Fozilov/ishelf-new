@@ -36,12 +36,12 @@ class WashingService implements ProductShelfInterface
 
     public function tempAddProduct(array $data): void
     {
-        ShelfTempService::tempAddProduct($data);
+        BaseTempService::tempAddProduct($data);
     }
 
     public function deleteTempProduct(ProductShelfTemp $temp): void
     {
-        ShelfTempService::deleteProductByTemp($temp);
+        BaseTempService::deleteProductByTemp($temp);
     }
 
     public function tempAutoOrderProduct(Shelf $shelf, array $priority)

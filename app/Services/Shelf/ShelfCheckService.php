@@ -17,6 +17,7 @@ class ShelfCheckService
         $shelf = Shelf::query()
             ->where('branch_id', $branch_id)
             ->where('category_sku', $category_sku)
+            ->where('status', 1)
             ->first();
 
         if ($shelf) {

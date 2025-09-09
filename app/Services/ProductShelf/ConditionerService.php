@@ -6,6 +6,7 @@ use App\Models\Shelf\Shelf;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Services\Shelf\ShelfTempService;
 use App\Interfaces\ProductShelfInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class ConditionerService implements ProductShelfInterface
 {
@@ -26,16 +27,47 @@ class ConditionerService implements ProductShelfInterface
 
     public function tempAddProduct(array $data): void
     {
-        ShelfTempService::tempAddProduct($data);
+        BaseTempService::tempAddProduct($data);
     }
 
     public function deleteTempProduct(ProductShelfTemp $temp): void
     {
-        ShelfTempService::deleteProductByTemp($temp);
+        BaseTempService::deleteProductByTemp($temp);
     }
 
-    public function tempAutoOrderProduct(Shelf $shelf, array $priority)
+    public function tempAutoOrderProduct(Shelf $shelf, array $priority): Collection
     {
-        // TODO: Implement tempAutoOrderProduct() method.
+        $products = ShelfTempService::getStocksForShelf($shelf);
+
+        $priorityMapping = [
+            'kv'    => ['product_attributes', 'product_attributes.kv'],
+            'price' => ['products', 'products.price'],
+        ];
+
+        if (isset($order_priority)) {
+            foreach ($order_priority as $priority) {
+                $attribute = key($priority);
+                $direction = $priority[$attribute];
+
+                if (isset($priorityMapping[$attribute])) {
+                    [$table, $column] = $priorityMapping[$attribute];
+
+                    $products->orderBy($column, $direction);
+                }
+            }
+        }
+
+        $sortedProducts = $products->get();
+        $shelfTemp = ProductShelfTemp::query()->where('shelf_id', $shelf->id)->orderBy('ordering')->get();
+
+        foreach ($shelfTemp as $index => $temp) {
+            $temp->update([
+                'sku'     => isset($sortedProducts[$index]) ? $sortedProducts[$index]->sku : null,
+                'is_sold' => false,
+                'sold_at' => null,
+            ]);
+        }
+
+        return $sortedProducts;
     }
 }
