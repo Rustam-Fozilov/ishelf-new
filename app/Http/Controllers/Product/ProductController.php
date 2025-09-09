@@ -9,8 +9,10 @@ use App\Http\Requests\Product\ToggleStatusRequest;
 use App\Http\Requests\Product\UpdateRequest;
 use App\Http\Resources\Resource;
 use App\Jobs\PriceTag\PriceTagSyncJob;
+use App\Jobs\Product\ProductPriceMonthsJob;
 use App\Jobs\Product\ProductSyncJob;
 use App\Models\PriceTag\PriceTagLog;
+use App\Models\Product\ProductPriceLog;
 use App\Services\Product\ProductLogService;
 use App\Services\Product\ProductService;
 use Carbon\Carbon;
@@ -42,11 +44,22 @@ class ProductController extends Controller
     public function createPriceTag(Request $request)
     {
         if (!empty($request->all())) {
-            PriceTagLog::query()->create(['data' => $request->all()]);
+            $this->logService->createPriceTag($request->all());
             dispatch(new PriceTagSyncJob());
         }
 
         $this->logService->deleteExcessPriceTagLogs();
+        return success();
+    }
+
+    public function createPriceMonths(Request $request)
+    {
+        if (!empty($request->all())) {
+            $this->logService->createProductPrice($request->all());
+            dispatch(new ProductPriceMonthsJob());
+        }
+
+        $this->logService->deleteExcessProductPriceLogs();
         return success();
     }
 

@@ -26,9 +26,18 @@ class ProductCategoryService
     public static function create(int $category_sku, string $title, int $skuname)
     {
         return ProductCategory::query()->updateOrCreate(
+            ['sku' => $category_sku],
             [
-                'sku' => $category_sku
-            ],
+                'title'   => $title,
+                'skuname' => $skuname
+            ]
+        );
+    }
+
+    public static function firstOrCreate(int $category_sku, string $title, int $skuname = null)
+    {
+        return ProductCategory::query()->firstOrCreate(
+            ['sku' => $category_sku],
             [
                 'title'   => $title,
                 'skuname' => $skuname
