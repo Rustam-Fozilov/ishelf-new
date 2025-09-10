@@ -4,6 +4,7 @@ namespace App\Services\Shelf;
 
 use App\Models\Branch;
 use App\Models\Product\Product;
+use App\Models\Shelf\AutoOrdering;
 use App\Models\Shelf\Shelf;
 use App\Models\Shelf\ShelvesTemp;
 use App\Models\Shelf\ProductShelfTemp;
@@ -211,5 +212,27 @@ class ShelfTempService
             ->where('products.status', 1)
             ->whereIn('products.sku', $stock->pluck('sku')->toArray())
             ->distinct('products.sku');
+    }
+
+    public function saveAutoOrderingProps(array $data): void
+    {
+        $shelf = Shelf::query()->where('id', $data['shelf_id'])->first();
+        $orderings = $data['order_priority'];
+
+        if ($shelf->category_sku != 934) {
+            $orderings = collect($data['order_priority'])->transform(function ($item) {
+                return [$item['order_by'] => $item['order_direction']];
+            });
+        }
+
+        AutoOrdering::query()->updateOrCreate(
+            ['shelf_id' => $data['shelf_id']],
+            ['order_by' => json_encode($orderings)]
+        );
+    }
+
+    public function deleteAutoOrderingProps(int $shelf_id): void
+    {
+        AutoOrdering::query()->where('shelf_id', $shelf_id)->delete();
     }
 }
