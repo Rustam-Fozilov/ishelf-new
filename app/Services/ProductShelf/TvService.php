@@ -6,6 +6,7 @@ use App\Interfaces\ProductShelfInterface;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
 use App\Services\Shelf\ShelfTempService;
+use Illuminate\Database\Eloquent\Collection;
 
 class TvService implements ProductShelfInterface
 {
@@ -75,7 +76,7 @@ class TvService implements ProductShelfInterface
         // TODO: Implement deleteTempProduct() method.
     }
 
-    public function tempAutoOrderProduct(Shelf $shelf, array $priority)
+    public function tempAutoOrderProduct(Shelf $shelf, array $priority): Collection
     {
         // TODO: Implement tempAutoOrderProduct() method.
     }

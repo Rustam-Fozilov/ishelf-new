@@ -3,9 +3,12 @@
 namespace App\Services\ProductShelf;
 
 use App\Models\Shelf\ProductShelfTemp;
+use App\Models\Shelf\Shelf;
 use App\Models\Stock\StockByBranch;
 use App\Services\Category\CategoryAttachService;
 use App\Services\Product\ProductService;
+use App\Services\Shelf\ShelfTempService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class BaseTempService
@@ -62,5 +65,34 @@ class BaseTempService
         $temp->is_sold = false;
         $temp->sold_at = null;
         $temp->save();
+    }
+
+    public static function tempAutoOrderProduct(Shelf $shelf, array $order_priority, array $priorityMapping): Collection
+    {
+        $products = ShelfTempService::getStocksForShelf($shelf);
+
+        foreach ($order_priority as $priority) {
+            $attribute = key($priority);
+            $direction = $priority[$attribute];
+
+            if (isset($priorityMapping[$attribute])) {
+                [$table, $column] = $priorityMapping[$attribute];
+
+                $products->orderBy($column, $direction);
+            }
+        }
+
+        $sortedProducts = $products->get();
+        $shelfTemp = ProductShelfTemp::query()->where('shelf_id', $shelf->id)->orderBy('ordering')->get();
+
+        foreach ($shelfTemp as $index => $temp) {
+            $temp->update([
+                'sku'     => isset($sortedProducts[$index]) ? $sortedProducts[$index]->sku : null,
+                'is_sold' => false,
+                'sold_at' => null,
+            ]);
+        }
+
+        return $sortedProducts;
     }
 }

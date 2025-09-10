@@ -37,37 +37,11 @@ class ConditionerService implements ProductShelfInterface
 
     public function tempAutoOrderProduct(Shelf $shelf, array $priority): Collection
     {
-        $products = ShelfTempService::getStocksForShelf($shelf);
-
         $priorityMapping = [
             'kv'    => ['product_attributes', 'product_attributes.kv'],
             'price' => ['products', 'products.price'],
         ];
 
-        if (isset($order_priority)) {
-            foreach ($order_priority as $priority) {
-                $attribute = key($priority);
-                $direction = $priority[$attribute];
-
-                if (isset($priorityMapping[$attribute])) {
-                    [$table, $column] = $priorityMapping[$attribute];
-
-                    $products->orderBy($column, $direction);
-                }
-            }
-        }
-
-        $sortedProducts = $products->get();
-        $shelfTemp = ProductShelfTemp::query()->where('shelf_id', $shelf->id)->orderBy('ordering')->get();
-
-        foreach ($shelfTemp as $index => $temp) {
-            $temp->update([
-                'sku'     => isset($sortedProducts[$index]) ? $sortedProducts[$index]->sku : null,
-                'is_sold' => false,
-                'sold_at' => null,
-            ]);
-        }
-
-        return $sortedProducts;
+        return BaseTempService::tempAutoOrderProduct($shelf, $priority, $priorityMapping);
     }
 }

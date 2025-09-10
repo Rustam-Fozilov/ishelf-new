@@ -6,6 +6,7 @@ use App\Interfaces\ProductShelfInterface;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
 use App\Services\Shelf\ShelfTempService;
+use Illuminate\Database\Eloquent\Collection;
 
 class RefrigeratorService implements ProductShelfInterface
 {
@@ -52,8 +53,14 @@ class RefrigeratorService implements ProductShelfInterface
         BaseTempService::deleteProductByTemp($temp);
     }
 
-    public function tempAutoOrderProduct(Shelf $shelf, array $priority)
+    public function tempAutoOrderProduct(Shelf $shelf, array $priority): Collection
     {
-        // TODO: Implement tempAutoOrderProduct() method.
+        $priorityMapping = [
+            'kv'     => ['product_attributes', 'product_attributes.kv'],
+            'price'  => ['products', 'products.price'],
+            'weight' => ['product_attributes', 'product_attributes.weight'],
+        ];
+
+        return BaseTempService::tempAutoOrderProduct($shelf, $priority, $priorityMapping);
     }
 }

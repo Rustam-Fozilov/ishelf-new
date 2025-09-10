@@ -10,7 +10,7 @@ class AutoOrderingRequest extends FormRequest
     {
         return [
             'shelf_id'         => 'required|integer|exists:shelves,id',
-            'order_priority'   => 'nullable|array',
+            'order_priority'   => 'required|array',
             'order_priority.*' => 'required|array',
         ];
     }

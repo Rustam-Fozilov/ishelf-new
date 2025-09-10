@@ -7,6 +7,7 @@ use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
 use App\Services\Shelf\PhoneShelfService;
 use App\Services\Shelf\ShelfTempService;
+use Illuminate\Database\Eloquent\Collection;
 
 class MicrowavesService implements ProductShelfInterface
 {
@@ -49,8 +50,12 @@ class MicrowavesService implements ProductShelfInterface
         BaseTempService::deleteProductByTemp($temp);
     }
 
-    public function tempAutoOrderProduct(Shelf $shelf, array $priority)
+    public function tempAutoOrderProduct(Shelf $shelf, array $priority): Collection
     {
-        // TODO: Implement tempAutoOrderProduct() method.
+        $priorityMapping = [
+            'price' => ['products', 'products.price'],
+        ];
+
+        return BaseTempService::tempAutoOrderProduct($shelf, $priority, $priorityMapping);
     }
 }
