@@ -2,12 +2,14 @@
 
 namespace App\Services\Shelf;
 
-use App\Models\Shelf\ProductShelf;
-use App\Models\Shelf\PhoneShelf;
-use App\Models\Shelf\ProductShelfTemp;
 use App\Models\Shelf\Shelf;
-use App\Services\ProductShelf\PhoneService;
+use App\Models\Shelf\PhoneShelf;
 use Illuminate\Support\Facades\DB;
+use App\Models\Shelf\ProductShelf;
+use App\Models\Shelf\ProductShelfTemp;
+use App\Jobs\Shelf\NotifyShelfUpdatedJob;
+use App\Services\PrintLog\PrintLogService;
+use App\Services\ProductShelf\PhoneService;
 
 class ShelfService
 {
@@ -184,5 +186,77 @@ class ShelfService
             $shelf->save();
             $current_ordering++;
         }
+    }
+
+    public function moveToProduct(int $shelf_id, ?int $user_id = null): void
+    {
+        $shelf = Shelf::query()->findOrFail($shelf_id);
+        $temp = ProductShelfTemp::query()->where('shelf_id', $shelf_id)->get();
+        $change = null;
+
+        if ($shelf->category_sku === 117) {
+            $product_shelf = ProductShelf::query()->where('shelf_id', $shelf_id);
+            $change = ShelfChangeService::create($shelf, $user_id);
+
+            if ($product_shelf->exists()) {
+                $product_shelf->delete();
+            }
+
+            foreach ($temp as $item) {
+                $this->saveProductShelf($item, $change->id);
+            }
+        } else {
+            foreach ($temp as $item) {
+                $check = $this->checkBySkuOrdering($shelf_id, $item->sku, $item->ordering);
+
+                if (!$check) {
+                    if (is_null($change)) {
+                        $change = ShelfChangeService::create($shelf, $user_id);
+                    }
+
+                    $this->deleteProductShelf($shelf_id, $item->ordering);
+                    $this->saveProductShelf($item, $change->id);
+                }
+            }
+        }
+
+        if ($change) {
+            PrintLogService::create($shelf_id, 2, $user_id);
+            dispatch(new NotifyShelfUpdatedJob($shelf));
+        }
+    }
+
+    protected function saveProductShelf(ProductShelfTemp $item, int $change_id): void
+    {
+        ProductShelf::query()->create([
+            'sku'            => $item->sku,
+            'size'           => $item->size,
+            'floor'          => $item->floor,
+            'place'          => $item->place,
+            'sold_at'        => $item->sold_at,
+            'is_sold'        => $item->is_sold,
+            'ordering'       => $item->ordering,
+            'shelf_id'       => $item->shelf_id,
+            'change_id'      => $change_id,
+            'floor_ordering' => $item->floor_ordering,
+        ]);
+    }
+
+    public function checkBySkuOrdering(int $shelf_id, int $sku, int $ordering): ?ProductShelf
+    {
+        return ProductShelf::query()
+            ->where('sku', $sku)
+            ->where('shelf_id', $shelf_id)
+            ->where('ordering', $ordering)
+            ->first();
+
+    }
+
+    public function deleteProductShelf(int $shelf_id, int $ordering): void
+    {
+        ProductShelf::query()
+            ->where('shelf_id', $shelf_id)
+            ->where('ordering', $ordering)
+            ->delete();
     }
 }

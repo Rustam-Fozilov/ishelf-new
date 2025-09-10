@@ -143,13 +143,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('product/{id}',[ShelfTempController::class, 'getTempByShelfId']);
         Route::post('add/product',[ShelfTempController::class, 'tempAddProduct']);
         Route::delete('delete/product/{temp_id}',[ShelfTempController::class, 'deleteTempProduct']);
+
         Route::post('auto', [ShelfTempController::class, 'makeAutoOrdering']);
         Route::post('auto/props/save', [ShelfTempController::class, 'saveAutoOrderingProps']);
         Route::delete('auto/props/delete/{shelf_id}', [ShelfTempController::class, 'deleteAutoOrderingProps']);
     });
 
     Route::group(['prefix' => 'ordering/product'], function () {
-        Route::get('save/{shelf_id}',[ShelfController::class, 'saveOrderingProduct']);
-        Route::get('list/{shelf_id}',[ShelfController::class, 'orderingProductList']);
+        Route::get('save/{shelf_id}', [ShelfController::class, 'saveOrderingProduct']);
+        Route::get('list/{shelf_id}', [ShelfController::class, 'orderingProductList']);
     });
 });

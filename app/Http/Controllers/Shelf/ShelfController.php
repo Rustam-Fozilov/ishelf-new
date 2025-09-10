@@ -69,4 +69,10 @@ class ShelfController extends Controller
         $this->service->updatePhoneTable($request->validated());
         return success();
     }
+
+    public function saveOrderingProduct(int $shelf_id)
+    {
+        $this->service->moveToProduct($shelf_id);
+        return success();
+    }
 }
