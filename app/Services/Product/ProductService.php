@@ -45,7 +45,6 @@ class ProductService
             (int) $product['categoryID'],
             (int) $product['brandID'],
             $product['name'],
-            $product['brand'],
         );
 
         StockByBranchService::updateOrCreate($stock_id, $product, $last->id);
@@ -138,19 +137,16 @@ class ProductService
         }
     }
 
-    public static function create(int $sku, int $category_sku, int $brand_sku, string $name, ?string $brand)
+    public static function create(int $sku, int $category_sku, int $brand_sku, string $name)
     {
-        $product = Product::query()->where('sku', $sku)->first();
-        if ($product) {
-            $product->update([
+        return Product::query()->updateOrCreate(
+            ['sku' => $sku],
+            [
                 'name'         => $name,
-                'brand'        => $brand ?? $product->brand,
                 'brand_sku'    => $brand_sku,
                 'category_sku' => $category_sku,
-            ]);
-        }
-
-        return $product;
+            ]
+        );
     }
 
     public function list(array $params): LengthAwarePaginator
