@@ -109,7 +109,8 @@ class ProductService
                 ->whereIn('shelf_id', $shelves)
                 ->whereIn('sku', $stocks)
                 ->where('is_sold', true)
-                ->distinct('sku');
+                ->distinct('sku')
+                ->get();
 
             $newProducts = (new StockByBranch())
                 ->setTable($branch->token)
@@ -125,12 +126,12 @@ class ProductService
                 ->where('product_log_id', '!=', $last->id)
                 ->delete();
 
-            if ($soldProducts->exists()) {
+            if ($soldProducts->isNotEmpty()) {
                 $log_date = Carbon::parse($last->created_at)->format('Y-m-d H:i:s');
-                dispatch(new SendStockToBotJob($branch, $soldProducts->get()->pluck('product')->toArray(), $log_date));
+                dispatch(new SendStockToBotJob($branch, $soldProducts->pluck('product')->toArray(), $log_date));
             }
 
-            if (count($newProducts) > 0) {
+            if ($newProducts->isNotEmpty()) {
                 dispatch(new SendNewStockToBotJob($branch, $newProducts->toArray()));
             }
         }
