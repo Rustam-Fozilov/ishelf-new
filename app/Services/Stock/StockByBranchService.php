@@ -39,4 +39,15 @@ class StockByBranchService
         if (is_null($stockProduct)) return true;
         return false;
     }
+
+    public function getStock(string $branch_token, ?int $category_sku = null)
+    {
+        return (new StockByBranch())
+            ->setTable($branch_token)
+            ->newQuery()
+            ->when(!is_null($category_sku), function ($query, $category_sku) {
+                $query->where('category_sku', $category_sku);
+            })
+            ->get();
+    }
 }

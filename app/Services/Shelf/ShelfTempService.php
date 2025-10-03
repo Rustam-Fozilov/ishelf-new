@@ -3,17 +3,17 @@
 namespace App\Services\Shelf;
 
 use App\Models\Branch;
-use App\Models\Product\Product;
-use App\Models\Shelf\AutoOrdering;
 use App\Models\Shelf\Shelf;
+use App\Models\Product\Product;
 use App\Models\Shelf\ShelvesTemp;
+use App\Models\Shelf\AutoOrdering;
 use App\Models\Shelf\ProductShelfTemp;
-use App\Models\Shelf\ShelfStockPriority;
-use App\Interfaces\ProductShelfInterface;
-use App\Models\Stock\StockByBranch;
 use App\Services\ProductShelf\TvService;
+use App\Interfaces\ProductShelfInterface;
 use App\Services\ProductShelf\PhoneService;
 use App\Services\ProductShelf\LaptopService;
+use App\Services\Stock\StockByBranchService;
+use Illuminate\Database\Eloquent\Collection;
 use App\Services\ProductShelf\WashingService;
 use App\Services\ProductShelf\PrinterService;
 use App\Services\ProductShelf\LaptopBagService;
@@ -23,13 +23,12 @@ use App\Services\ProductShelf\ConditionerService;
 use App\Services\ProductShelf\WaterHeaterService;
 use App\Services\ProductShelf\RefrigeratorService;
 use App\Services\ProductShelf\VacuumCleanerService;
-use Illuminate\Database\Eloquent\Collection;
 
 class ShelfTempService
 {
-    public ProductShelfInterface $productService;
-    public float $default;
     public float $space;
+    public float $default;
+    public ProductShelfInterface $productService;
 
     public function __construct(
         int $category_sku = null,
@@ -91,40 +90,40 @@ class ShelfTempService
         }
     }
 
-    public function getTempByShelfId(int $shelf_id): Collection
-    {
-        $temp = ProductShelfTemp::with(['product','product_attr'])->where('shelf_id', $shelf_id)->get();
-        $priority_products = ShelfStockPriority::with(['product', 'product_attr'])->where('shelf_id', $shelf_id)->get();
-
-        foreach ($priority_products as $product) {
-            $product->ordering = $product->order;
-            unset($product->order);
-        }
-
-        if ($temp->isNotEmpty()) {
-            foreach ($priority_products as $p) {
-                $p->is_priority = true;
-                $temp[] = $p;
-            }
-            $result = $temp;
-        } else {
-            $this->create($shelf_id);
-            $result = ProductShelfTemp::with(['product','product_attr'])->where('shelf_id', $shelf_id)->get();
-        }
-
-        return $result;
-    }
-
     public function create(int $shelf_id): void
     {
         $shelf = Shelf::query()->findOrFail($shelf_id);
         $this->productService->createTemp($shelf);
     }
 
+    public function getTempByShelfId(int $shelf_id): Collection
+    {
+        $temp = ProductShelfTemp::with(['product','product_attr'])->where('shelf_id', $shelf_id)->get();
+        $priority_products = (new ShelfStockPriorityService())->getByShelfId($shelf_id); // prioritetdagi tovarlar
+
+        return $this->getOrCreate($temp, $priority_products, $shelf_id);
+    }
+
+    public function getOrCreate($product_shelf_temp, $priority_products, int $shelf_id): Collection
+    {
+        if ($product_shelf_temp->isNotEmpty()) {
+            foreach ($priority_products as $p) {
+                $p->is_priority = true;
+                $product_shelf_temp[] = $p;
+            }
+
+            $result = $product_shelf_temp;
+        } else {
+            $this->create($shelf_id);
+            $result = ProductShelfTemp::with(['product', 'product_attr'])->where('shelf_id', $shelf_id)->get();
+        }
+
+        return $result;
+    }
+
     public function addProduct(array $params): void
     {
-        $shelf = Shelf::query()->find($params['shelf_id']);
-        $params['shelf'] = $shelf;
+        $params['shelf'] = Shelf::query()->find($params['shelf_id']);
         $this->productService->tempAddProduct($params);
     }
 
@@ -193,18 +192,14 @@ class ShelfTempService
 
     public function autoOrdering(array $params): Collection
     {
-        $shelf = Shelf::query()->where('status', 1)->findOrFail($params['shelf_id']);
+        $shelf = Shelf::query()->where('status', 1)->find($params['shelf_id']);
         return $this->productService->tempAutoOrderProduct($shelf, $params['order_priority']);
     }
 
     public static function getStocksForShelf(Shelf $shelf)
     {
         $branch = Branch::query()->where('id', $shelf->branch_id)->first();
-        $stock = (new StockByBranch())
-            ->setTable($branch->token)
-            ->newQuery()
-            ->where('category_sku', $shelf->category_sku)
-            ->get();
+        $stock = (new StockByBranchService())->getStock($branch->token, $shelf->category_sku);
 
         return Product::query()
             ->join('product_attributes', 'products.sku', '=', 'product_attributes.sku')

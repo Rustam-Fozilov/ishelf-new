@@ -57,4 +57,16 @@ class ShelfStockPriorityService
             ]);
         }
     }
+
+    public function getByShelfId(int $shelf_id)
+    {
+        $priority_products = ShelfStockPriority::with(['product', 'product_attr'])->where('shelf_id', $shelf_id)->get();
+
+        foreach ($priority_products as $product) {
+            $product->ordering = $product->order;
+            unset($product->order);
+        }
+
+        return $priority_products;
+    }
 }
