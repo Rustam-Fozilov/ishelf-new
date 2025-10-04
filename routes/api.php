@@ -1,20 +1,21 @@
 <?php
 
-use App\Http\Controllers\Category\CategoryBrandController;
-use App\Http\Controllers\PrintLog\PrintLogController;
-use App\Http\Controllers\Product\ProductController;
-use App\Http\Controllers\Product\ProductParameterController;
-use App\Http\Controllers\Shelf\ShelfTempController;
-use App\Http\Controllers\Stock\StockController;
-use App\Http\Controllers\Upload\MMLController;
-use App\Http\Controllers\Upload\UploadController;
+use App\Http\Controllers\Application\ApplicationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Upload\MMLController;
 use App\Http\Controllers\Shelf\ShelfController;
+use App\Http\Controllers\Stock\StockController;
+use App\Http\Controllers\Upload\UploadController;
+use App\Http\Controllers\Shelf\ShelfTempController;
+use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\PrintLog\PrintLogController;
+use App\Http\Controllers\Category\CategoryBrandController;
+use App\Http\Controllers\Product\ProductParameterController;
 use App\Http\Controllers\Shelf\ShelfStockPriorityController;
 use App\Http\Controllers\Category\ProductCategoryController;
 
@@ -166,5 +167,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'v2'], function () {
         Route::get('product/list/{shelf_id}', [ProductController::class, 'v2ProductList']);
         Route::get('product/temp_list/{shelf_id}/', [ProductController::class, 'v2TempProductList']);
+    });
+
+    Route::group(['prefix' => 'applications'], function () {
+        Route::get('list', [ApplicationController::class, 'list']);
+        Route::get('get/{id}', [ApplicationController::class, 'getById']);
+        Route::post('add', [ApplicationController::class, 'add']);
+        Route::post('change/step', [ApplicationController::class, 'changeStep']);
+        Route::delete('delete/{id}', [ApplicationController::class, 'delete']);
     });
 });

@@ -116,6 +116,8 @@ return [
         'livewire*',
         'nova-api*',
         'pulse*',
+        'api/product_log',
+        'api/price_tag'
     ],
 
     'ignore_commands' => [

@@ -6,7 +6,7 @@ use App\Services\Product\ProductService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class ProductSyncItemJob implements ShouldQueue
+class ProductCheckJob implements ShouldQueue
 {
     use Queueable;
 

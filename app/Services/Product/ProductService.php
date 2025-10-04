@@ -2,7 +2,7 @@
 
 namespace App\Services\Product;
 
-use App\Jobs\Product\ProductSyncItemJob;
+use App\Jobs\Product\ProductCheckJob;
 use App\Jobs\Stock\SendNewStockToBotJob;
 use App\Jobs\Stock\SendStockToBotJob;
 use App\Models\Branch;
@@ -25,7 +25,7 @@ class ProductService
 
         if ($log) {
             foreach ($log->data['params'] as $item) {
-                dispatch(new ProductSyncItemJob($item, $log->id));
+                dispatch(new ProductCheckJob($item, $log->id));
             }
         }
     }
