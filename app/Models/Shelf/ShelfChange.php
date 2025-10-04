@@ -17,6 +17,6 @@ class ShelfChange extends Model
 
     public function user_info()
     {
-        return $this->hasOne(User::class,'id','user_id')->select('id','name','surname','patronymic');
+        return $this->hasOne(User::class,'id','user_id')->select(['id', 'name', 'surname', 'patronymic']);
     }
 }

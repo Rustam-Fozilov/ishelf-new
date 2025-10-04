@@ -4,6 +4,8 @@ namespace App\Services\Shelf;
 
 use App\Models\Shelf\Shelf;
 use App\Models\Shelf\PhoneShelf;
+use App\Models\Shelf\ShelfStockPriority;
+use App\Models\Upload;
 use Illuminate\Support\Facades\DB;
 use App\Models\Shelf\ProductShelf;
 use App\Models\Shelf\ProductShelfTemp;
@@ -260,5 +262,31 @@ class ShelfService
             ->where('shelf_id', $shelf_id)
             ->where('ordering', $ordering)
             ->delete();
+    }
+
+    public function orderingProductList(int $shelf_id)
+    {
+        $last_change = ShelfChangeService::getLastChange($shelf_id, 'user_info');
+
+        $shelf = ProductShelf::query()
+            ->with(['product','product_attr'])
+            ->with(['change' => function ($query) use ($last_change) {
+                $query->where('id', $last_change->id);
+            }])
+            ->where('shelf_id', $shelf_id)
+            ->get();
+
+        $priority_products = (new ShelfStockPriorityService())->getByShelfId($shelf_id);
+
+        $send['product'] = $shelf;
+        $send['change_info'] = $last_change;
+        $send['priority_products'] = $priority_products;
+        return $send;
+    }
+
+    public function uploadImageToPhone(array $params): void
+    {
+        $upload = Upload::query()->where('url', $params['file_url'])->first();
+        Shelf::query()->where('id', $params['shelf_id'])->update(['upload_id' => $upload->id]);
     }
 }

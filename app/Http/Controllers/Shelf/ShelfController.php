@@ -7,9 +7,11 @@ use App\Http\Requests\Shelf\AddRequest;
 use App\Http\Requests\Shelf\DeleteSkusRequest;
 use App\Http\Requests\Shelf\ListRequest;
 use App\Http\Requests\Shelf\UpdatePhoneTableRequest;
+use App\Http\Requests\Shelf\UploadPhoneImageRequest;
 use App\Http\Resources\Resource;
 use App\Models\Shelf\Shelf;
 use App\Services\RolePerm\PermissionService;
+use App\Services\Shelf\PhoneShelfService;
 use App\Services\Shelf\ShelfService;
 use Illuminate\Http\Request;
 
@@ -74,5 +76,23 @@ class ShelfController extends Controller
     {
         $this->service->moveToProduct($shelf_id);
         return success();
+    }
+
+    public function orderingProductList(int $shelf_id)
+    {
+        $data = $this->service->orderingProductList($shelf_id);
+        return success($data);
+    }
+
+    public function uploadImageToPhone(UploadPhoneImageRequest $request)
+    {
+        $this->permissionService->hasPermission('shelf.upload_image');
+        $this->service->uploadImageToPhone($request->validated());
+        return success();
+    }
+
+    public function addStartPointToPhone(int $table_id, Request $request)
+    {
+        PhoneShelfService::addStartPoint($table_id, $request['start_point']);
     }
 }

@@ -220,4 +220,16 @@ class ProductService
             $parent->save();
         }
     }
+
+    public function v2ProductList(int $shelf_id)
+    {
+        $shelf = Shelf::query()->findOrFail($shelf_id);
+        return StockByBranchService::getProductByShelf($shelf);
+    }
+
+    public function v2TempProductList(int $shelf_id)
+    {
+        $shelf = Shelf::query()->findOrFail($shelf_id);
+        return StockByBranchService::getTempProductByShelf($shelf);
+    }
 }

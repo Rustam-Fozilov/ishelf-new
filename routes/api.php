@@ -151,6 +151,20 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'ordering/product'], function () {
         Route::get('save/{shelf_id}', [ShelfController::class, 'saveOrderingProduct']);
-//        Route::get('list/{shelf_id}', [ShelfController::class, 'orderingProductList']);
+        Route::get('list/{shelf_id}', [ShelfController::class, 'orderingProductList']);
+    });
+
+    Route::group(['prefix' => 'phone'], function () {
+        Route::post('upload/image', [ShelfController::class, 'uploadImageToPhone']);
+        Route::post('add/start/point/{table_id}', [ShelfController::class, 'addStartPointToPhone']);
+    });
+
+    Route::group(['prefix' => 'price_tag'], function () {
+        //
+    });
+
+    Route::group(['prefix' => 'v2'], function () {
+        Route::get('product/list/{shelf_id}', [ProductController::class, 'v2ProductList']);
+        Route::get('product/temp_list/{shelf_id}/', [ProductController::class, 'v2TempProductList']);
     });
 });

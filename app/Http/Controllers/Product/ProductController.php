@@ -88,4 +88,16 @@ class ProductController extends Controller
         $this->service->family($request->validated());
         return success();
     }
+
+    public function v2ProductList(int $shelf_id)
+    {
+        $data = $this->service->v2ProductList($shelf_id);
+        return success($data);
+    }
+
+    public function v2TempProductList(int $shelf_id)
+    {
+        $data = $this->service->v2TempProductList($shelf_id);
+        return success($data);
+    }
 }

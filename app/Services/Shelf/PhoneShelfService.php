@@ -43,4 +43,9 @@ class PhoneShelfService
     {
         return PhoneShelf::query()->where('shelf_id', $shelf_id)->with($with)->get();
     }
+
+    public static function addStartPoint($table_id, $start_point): void
+    {
+        PhoneShelf::query()->where('id', $table_id)->update(['start_point' => $start_point]);
+    }
 }

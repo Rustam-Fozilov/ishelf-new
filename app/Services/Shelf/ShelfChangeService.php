@@ -13,7 +13,7 @@ class ShelfChangeService
     {
         return ShelfChange::with($with)
             ->where('shelf_id', $shelf_id)
-            ->orderBy('id', 'desc')
+            ->orderByDesc('id')
             ->first();
     }
 
