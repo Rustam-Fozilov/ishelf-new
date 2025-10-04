@@ -123,6 +123,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::prefix('parameters')->group(function () {
             Route::get('list', [ProductParameterController::class, 'list']);
             Route::put('update', [ProductParameterController::class, 'update']);
+            Route::post('upload/excel', [ProductParameterController::class, 'uploadExcel']);
         });
     });
 

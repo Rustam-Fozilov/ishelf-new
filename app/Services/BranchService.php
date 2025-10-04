@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use App\Services\Admin\AdminService;
 
 class BranchService
 {
@@ -45,5 +46,10 @@ class BranchService
     {
         $branch = Branch::query()->find($data['branch_id']);
         $branch->update(['status' => $data['status']]);
+    }
+
+    public static function syncBranches(): void
+    {
+        (new AdminService())->branchSync();
     }
 }
