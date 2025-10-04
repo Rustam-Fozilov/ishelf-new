@@ -17,6 +17,7 @@ class BranchSyncRequest extends Request
      */
     public function resolveEndpoint(): string
     {
+        // TODO: url ni to'g'irlash kerak
         return '/example';
     }
 }

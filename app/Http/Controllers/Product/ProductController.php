@@ -30,9 +30,9 @@ class ProductController extends Controller
     public function productLog(Request $request)
     {
         $last = $this->logService->last();
-        $work = !$last || Carbon::now()->gte(Carbon::parse($last->created_at)->addMinutes(30));
+        $work = !$last || now()->gte(Carbon::parse($last->created_at)->addMinutes(30));
 
-        if ($work && !empty($request->all())) {
+        if ($work) {
             $this->logService->create($request->all());
             dispatch(new ProductSyncJob());
         }
@@ -43,10 +43,8 @@ class ProductController extends Controller
 
     public function createPriceTag(Request $request)
     {
-        if (!empty($request->all())) {
-            $this->logService->createPriceTag($request->all());
-            dispatch(new PriceTagSyncJob());
-        }
+        $this->logService->createPriceTag($request->all());
+        dispatch(new PriceTagSyncJob());
 
         $this->logService->deleteExcessPriceTagLogs();
         return success();
@@ -54,10 +52,8 @@ class ProductController extends Controller
 
     public function createPriceMonths(Request $request)
     {
-        if (!empty($request->all())) {
-            $this->logService->createProductPrice($request->all());
-            dispatch(new ProductPriceMonthsJob());
-        }
+        $this->logService->createProductPrice($request->all());
+        dispatch(new ProductPriceMonthsJob());
 
         $this->logService->deleteExcessProductPriceLogs();
         return success();
@@ -65,7 +61,7 @@ class ProductController extends Controller
 
     public function list(ListRequest $request)
     {
-        $data = $this->service->list($request->all());
+        $data = $this->service->list($request->validated());
         return new Resource($data);
     }
 

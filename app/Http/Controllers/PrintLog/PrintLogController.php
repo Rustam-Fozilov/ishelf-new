@@ -26,7 +26,7 @@ class PrintLogController extends Controller
 
     public function create(CreateRequest $request)
     {
-        PrintLogService::create($request['shelf_id'], $request['status']);
+        $this->service::create($request['shelf_id'], $request['status']);
         return success();
     }
 

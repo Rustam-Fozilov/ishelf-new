@@ -23,16 +23,14 @@ class UserController extends Controller
 
     public function list(ListRequest $request)
     {
-        $perm = $this->permissionService::getAllow('user.list');
-        if (!$perm) $this->permissionService::forbidden('user.list');
-
+        $this->permissionService->hasPermission('user.list');
         $data = $this->service->list($request->validated());
         return new Resource($data);
     }
 
     public function getById(int $id)
     {
-        $this->permissionService->isAllow('user.get', 1, true);
+        $this->permissionService->hasPermission('user.get');
         $data = $this->service->getById($id, ['role','branches','categories']);
         return success($data);
     }
@@ -45,7 +43,7 @@ class UserController extends Controller
 
     public function add(AddRequest $request)
     {
-        $this->permissionService->isAllow('user.add', 1, true);
+        $this->permissionService->hasPermission('user.add');
         $this->service->add($request->validated());
         return success();
     }
@@ -58,14 +56,14 @@ class UserController extends Controller
 
     public function changePhone(ChangePhoneRequest $request)
     {
-        $this->permissionService->isAllow('user.change_phone',1,true);
+        $this->permissionService->hasPermission('user.change_phone');
         $this->service->changePhone($request->get('phone'));
         return success();
     }
 
     public function update(int $id, UpdateRequest $request)
     {
-        $this->permissionService->isAllow('user.update',1,true);
+        $this->permissionService->hasPermission('user.update');
         $this->service->update($id, $request->validated());
         return success();
     }
@@ -73,28 +71,28 @@ class UserController extends Controller
     public function toggleStatus(int $id, Request $request)
     {
         $request->validate(['status' => 'required|boolean']);
-        $this->permissionService->isAllow('user.update',1,true);
+        $this->permissionService->hasPermission('user.update');
         $this->service->toggleStatus($id, $request->get('status'));
         return success();
     }
 
     public function categories(Request $request)
     {
-        $this->permissionService->isAllow('user.categories_list',1,true);
+        $this->permissionService->hasPermission('user.categories_list');
         $data = $this->service->categories($request->all());
         return new Resource($data);
     }
 
     public function branches(Request $request)
     {
-        $this->permissionService->isAllow('user.branches_list',1,true);
+        $this->permissionService->hasPermission('user.branches_list');
         $data = $this->service->branches($request->all());
         return new Resource($data);
     }
 
     public function delete(int $id)
     {
-        $this->permissionService->isAllow('user.delete',1,true);
+        $this->permissionService->hasPermission('user.delete');
         $this->service->delete($id);
         return success();
     }

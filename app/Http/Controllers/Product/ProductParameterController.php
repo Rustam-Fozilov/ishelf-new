@@ -20,14 +20,14 @@ class ProductParameterController extends Controller
 
     public function list(ListRequest $request)
     {
-        $this->permissionService->isAllow('characters.list', 1, true);
+        $this->permissionService->hasPermission('characters.list');
         $data = $this->service->list($request->validated());
         return success($data);
     }
 
     public function update(UpdateRequest $request)
     {
-        $this->permissionService->isAllow('characters.edit', 1, true);
+        $this->permissionService->hasPermission('characters.edit');
         $this->service->update($request->validated());
         return success();
     }

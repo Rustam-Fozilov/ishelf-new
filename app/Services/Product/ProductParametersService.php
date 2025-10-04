@@ -21,8 +21,10 @@ class ProductParametersService
                 $query->where('category_sku', $data['category_sku']);
             })
             ->when(isset($data['search']), function ($query) use ($data) {
-                $query->where('name', 'like', '%' . translit($data['search'])['lat'] . '%')
-                    ->orWhere('name', 'like', '%' . translit($data['search'])['cyr'] . '%');
+                $query->where(function ($query) use ($data) {
+                    $query->where('name', 'like', '%' . translit($data['search'])['lat'] . '%')
+                        ->orWhere('name', 'like', '%' . translit($data['search'])['cyr'] . '%');
+                });
             })
             ->when($order_by === 'key', function ($query) use ($order_direction) {
                 $query->orderByRaw("CAST(`key` AS UNSIGNED) $order_direction");
@@ -37,10 +39,10 @@ class ProductParametersService
         foreach ($data['parameters'] as $item) {
             $parameter = Parameter::query()->where('category_sku', $data['category_sku'])->where('key', $item['key'])->first();
             $parameter->update([
-                'name' => $item['name'] ?? null,
+                'name'       => $item['name'] ?? null,
+                'icon_id'    => $item['icon_id'] ?? null,
+                'ordering'   => $item['ordering'] ?? null,
                 'short_name' => $item['short_name'] ?? null,
-                'ordering' => $item['ordering'] ?? null,
-                'icon_id' => $item['icon_id'] ?? null,
             ]);
             $parameter->products()->update(['ordering' => $item['ordering'] ?? null]);
         }
@@ -77,19 +79,5 @@ class ProductParametersService
         if (!$param) $param = Parameter::query()->create(['key' => $key, 'category_sku' => $category_sku, 'name' => $name]);
 
         return $param;
-    }
-
-    public static function updateParameters(array $data): void
-    {
-        foreach ($data['parameters'] as $item) {
-            $parameter = Parameter::query()->where('category_sku', $data['category_sku'])->where('key', $item['key'])->first();
-            $parameter->update([
-                'name'       => $item['name'] ?? null,
-                'icon_id'    => $item['icon_id'] ?? null,
-                'ordering'   => $item['ordering'] ?? null,
-                'short_name' => $item['short_name'] ?? null,
-            ]);
-            $parameter->products()->update(['ordering' => $item['ordering'] ?? null]);
-        }
     }
 }

@@ -48,6 +48,8 @@ class ShelfService
             ->orderBy($order_by, $order_direction)
             ->paginate($params['per_page'] ?? 10);
 
+        // TODO: permission bilan olishni eskicha qilish kerak (buni tekshirish kerak)
+
         return $list->whereIn('branch_id', auth()->user()->branches()->pluck('id')->toArray());
     }
 
@@ -127,11 +129,11 @@ class ShelfService
             $old = PhoneShelf::query()->where('id', $params['phone_table_id'])->first();
 
             $old->update([
+                'size'          => $params['size'] ?? $old->size,
+                'type'          => $params['type'],
                 'shelf_id'      => $params['shelf_id'],
                 'status_zone'   => $params['status_zone'] ?? $old->status_zone,
                 'product_count' => $params['product_count'] ?? $old->product_count,
-                'size'          => $params['size'] ?? $old->size,
-                'type'          => $params['type'],
             ]);
 
             $orderingTemp = ProductShelfTemp::query()

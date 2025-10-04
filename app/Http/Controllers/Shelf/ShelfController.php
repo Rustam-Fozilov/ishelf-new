@@ -31,21 +31,21 @@ class ShelfController extends Controller
 
     public function getById(int $id)
     {
-        $this->permissionService->isAllow('shelf.get', 1, true);
+        $this->permissionService->hasPermission('shelf.get');
         $data = $this->service->getById($id);
         return success($data);
     }
 
     public function add(AddRequest $request)
     {
-        $this->permissionService->isAllow('shelf.add', 1, true);
+        $this->permissionService->hasPermission('shelf.add');
         $this->service->add($request->validated());
         return success();
     }
 
     public function update(int $id, AddRequest $request)
     {
-        $this->permissionService->isAllow('shelf.update', 1, true);
+        $this->permissionService->hasPermission('shelf.update');
         $this->service->update($id, $request->validated());
         return success();
     }
@@ -58,14 +58,14 @@ class ShelfController extends Controller
 
     public function delete(int $id)
     {
-        $this->permissionService->isAllow('shelf.delete', 1, true);
+        $this->permissionService->hasPermission('shelf.delete');
         $this->service->delete($id);
         return success();
     }
 
     public function updatePhoneTable(UpdatePhoneTableRequest $request)
     {
-        $this->permissionService->isAllow('shelf.change_phone', 1, true);
+        $this->permissionService->hasPermission('shelf.change_phone');
         $this->service->updatePhoneTable($request->validated());
         return success();
     }

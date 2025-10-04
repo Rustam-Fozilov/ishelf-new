@@ -9,7 +9,7 @@ class AuthService
     public function login(array $params): array
     {
         $user = User::query()->where('phone', $params['phone'])->where('status', 1)->first();
-        if (!$user) throwError(__('auth.failed'));
+        if (!$user) throwError(__('auth.forbidden'));
 
         if (!auth()->attempt(['phone' => $params['phone'], 'password' => $params['password']])) {
             throwError(__('auth.failed'));
