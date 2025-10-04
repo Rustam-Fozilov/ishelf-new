@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Application\ApplicationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -15,6 +14,7 @@ use App\Http\Controllers\Shelf\ShelfTempController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\PrintLog\PrintLogController;
 use App\Http\Controllers\Category\CategoryBrandController;
+use App\Http\Controllers\Application\ApplicationController;
 use App\Http\Controllers\Product\ProductParameterController;
 use App\Http\Controllers\Shelf\ShelfStockPriorityController;
 use App\Http\Controllers\Category\ProductCategoryController;

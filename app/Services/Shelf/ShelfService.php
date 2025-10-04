@@ -2,33 +2,49 @@
 
 namespace App\Services\Shelf;
 
+use App\Models\Upload;
 use App\Models\Shelf\Shelf;
 use App\Models\Shelf\PhoneShelf;
-use App\Models\Shelf\ShelfStockPriority;
-use App\Models\Upload;
+use App\Models\PrintLog\PrintLog;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Shelf\ProductShelf;
 use App\Models\Shelf\ProductShelfTemp;
 use App\Jobs\Shelf\NotifyShelfUpdatedJob;
 use App\Services\PrintLog\PrintLogService;
 use App\Services\ProductShelf\PhoneService;
+use App\Services\RolePerm\PermissionService;
 
 class ShelfService
 {
-    public function list(array $params)
+    public function list(array $params): LengthAwarePaginator
     {
+        $page = $params['page'] ?? 1;
+        $perPage = $params['per_page'] ?? 15;
         $order_by = $params['order_by'] ?? 'id';
         $order_direction = $params['order_direction'] ?? 'desc';
 
-        $list = Shelf::query()
-            ->with(['branches.region', 'category', 'phone_tables', 'updates', 'user_updates', 'last_change.user_info'])
-            ->withCount(['product_shelf' => function ($q) {
-                $q->whereNull('sku');
-            }])
-            ->withCount(['product_shelf as product_sold_count' => function ($q) {
-                $q->where('is_sold', 1)->whereNotNull('sku');
-            }])
+        $user = auth()->user();
+        $perm = PermissionService::getAllow('shelf.list');
+        $branch_ids = $user->branches()->pluck('id')->toArray();
+
+        $query = Shelf::query()
+            ->with([
+                'branches.region',
+                'category',
+                'phone_tables',
+                'last_change.user_info'
+            ])
+            ->withCount([
+                'product_shelf' => function ($q) {
+                    $q->whereNull('sku');
+                },
+                'product_shelf as product_sold_count' => function ($q) {
+                    $q->where('is_sold', 1)->whereNotNull('sku');
+                }
+            ])
             ->where('status', 1)
+            ->whereIn('branch_id', $branch_ids)
             ->when(isset($params['branch_id']), function ($query) use ($params) {
                 $query->where('branch_id', $params['branch_id']);
             })
@@ -47,12 +63,66 @@ class ShelfService
             ->when(isset($params['is_paddon']), function ($query) use ($params) {
                 $query->where('is_paddon', $params['is_paddon']);
             })
-            ->orderBy($order_by, $order_direction)
-            ->paginate($params['per_page'] ?? 10);
+            ->when($perm === 'own', function ($query) use ($user) {
+                $category_skus = $user->categories()->pluck('sku')->toArray();
 
-        // TODO: permission bilan olishni eskicha qilish kerak (buni tekshirish kerak)
+                if ($user->role->category_must_be_added == 1) {
+                    $query->whereIn('category_sku', $category_skus);
+                }
+            })
+            ->orderBy($order_by, $order_direction);
 
-        return $list->whereIn('branch_id', auth()->user()->branches()->pluck('id')->toArray());
+        $result = $query->paginate($perPage, ['*'], 'page', $page);
+
+        if ($user->role->title === 'Direktor') {
+            $this->addIsNewDirector($result, $user);
+        } else {
+            $this->addIsNewNonDirector($result);
+        }
+
+        return $result;
+    }
+
+    private function addIsNewDirector($result, $user): void
+    {
+        $shelfIds = $result->pluck('id')->toArray();
+        $changeIds = $result->whereNotNull('last_change')
+            ->pluck('last_change.id')
+            ->filter()
+            ->toArray();
+
+        if (empty($shelfIds) || empty($changeIds)) {
+            $this->addIsNewNonDirector($result);
+            return;
+        }
+
+        $printLogs = PrintLog::query()
+            ->whereIn('shelf_id', $shelfIds)
+            ->whereIn('change_id', $changeIds)
+            ->where('user_id', $user->id)
+            ->where('status', 4)
+            ->get()
+            ->keyBy(function ($log) {
+                return $log->shelf_id . '_' . $log->change_id;
+            });
+
+        $result->getCollection()->transform(function ($item) use ($printLogs) {
+            if ($item->last_change) {
+                $key = $item->id . '_' . $item->last_change->id;
+                $item->is_new = !$printLogs->has([$key]);
+            } else {
+                $item->is_new = false;
+            }
+            return $item;
+        });
+    }
+
+    private function addIsNewNonDirector($result): void
+    {
+        $result->getCollection()->transform(function ($item) {
+            $item->is_new = false;
+            return $item;
+        });
     }
 
     public function getById(int $id)
@@ -264,7 +334,7 @@ class ShelfService
             ->delete();
     }
 
-    public function orderingProductList(int $shelf_id)
+    public function orderingProductList(int $shelf_id): array
     {
         $last_change = ShelfChangeService::getLastChange($shelf_id, 'user_info');
 

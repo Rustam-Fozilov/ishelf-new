@@ -10,7 +10,7 @@ class UploadPhoneImageRequest extends FormRequest
     {
         return [
             'shelf_id' => 'required|integer|exists:shelves,id,category_sku,934',
-            'file_url' => 'required|string',
+            'file_url' => 'required|string|exists:uploads,url',
         ];
     }
 }
