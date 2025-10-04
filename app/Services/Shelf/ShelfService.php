@@ -6,6 +6,7 @@ use App\Models\Upload;
 use App\Models\Shelf\Shelf;
 use App\Models\Shelf\PhoneShelf;
 use App\Models\PrintLog\PrintLog;
+use App\Services\ProductShelf\TvService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Shelf\ProductShelf;
@@ -183,9 +184,56 @@ class ShelfService
         }
     }
 
-    public function deleteSkus(array $params)
+    public function deleteSkus(array $data): void
     {
-        // TODO: tugatish kerak, product service class bilan
+        DB::beginTransaction();
+
+        $region_id = $data['region_id'] ?? null;
+        $branch_id = $data['branch_id'] ?? null;
+        $category_sku = $data['category_sku'] ?? null;
+
+        $shelves = Shelf::query()
+            ->where('status', 1)
+            ->when(!is_null($branch_id), function ($query) use ($branch_id) {
+                $query->where('branch_id', $branch_id);
+            })
+            ->when(!is_null($region_id), function ($query) use ($region_id) {
+                $query->whereRelation('branches', 'region_id', '=', $region_id);
+            })
+            ->when(!is_null($category_sku), function ($query) use ($category_sku) {
+                $query->where('category_sku', $category_sku);
+            })
+            ->select('id')
+            ->pluck('id');
+
+        try {
+            $temps = ProductShelfTemp::query()
+                ->whereIn('shelf_id', $shelves)
+                ->where('is_sold', 1)
+                ->whereNotNull('sold_at')
+                ->get();
+
+            foreach ($temps as $temp) {
+                if ($temp->product->category_sku == 117) {
+                    (new TvService())->deleteTempProduct($temp);
+                } else {
+                    $temp->sku = null;
+                    $temp->sold_at = null;
+                    $temp->is_sold = false;
+                    $temp->save();
+                }
+            }
+
+            if ($temps->isNotEmpty()) {
+                $shelves->each(function ($shelf_id) {
+                    $this::moveToProduct($shelf_id);
+                });
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            throwResponse($e);
+        }
     }
 
     public function delete(int $id): void
@@ -281,7 +329,7 @@ class ShelfService
             }
         } else {
             foreach ($temp as $item) {
-                $check = $this->checkBySkuOrdering($shelf_id, $item->sku, $item->ordering);
+                $check = $this->checkBySkuOrdering($shelf_id, $item->ordering, $item->sku);
 
                 if (!$check) {
                     if (is_null($change)) {
@@ -316,7 +364,7 @@ class ShelfService
         ]);
     }
 
-    public function checkBySkuOrdering(int $shelf_id, int $sku, int $ordering): ?ProductShelf
+    public function checkBySkuOrdering(int $shelf_id, int $ordering, int $sku = null): ?ProductShelf
     {
         return ProductShelf::query()
             ->where('sku', $sku)
