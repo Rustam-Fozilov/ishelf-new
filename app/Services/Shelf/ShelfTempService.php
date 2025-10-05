@@ -23,6 +23,7 @@ use App\Services\ProductShelf\ConditionerService;
 use App\Services\ProductShelf\WaterHeaterService;
 use App\Services\ProductShelf\RefrigeratorService;
 use App\Services\ProductShelf\VacuumCleanerService;
+use Illuminate\Support\Carbon;
 
 class ShelfTempService
 {
@@ -32,8 +33,8 @@ class ShelfTempService
 
     public function __construct(
         int $category_sku = null,
-        float $default = null,
-        float $space = null
+        float $default = 0.0,
+        float $space = 0.0
     )
     {
         if ($category_sku) {
@@ -229,5 +230,24 @@ class ShelfTempService
     public function deleteAutoOrderingProps(int $shelf_id): void
     {
         AutoOrdering::query()->where('shelf_id', $shelf_id)->delete();
+    }
+
+    public function makeAutoOrdering(): void
+    {
+        $shelves = AutoOrdering::with(['shelf'])
+            ->whereRelation('shelf', 'status', '=', 1)
+            ->whereRelation('shelf', 'branch_id', '=', 5)
+            ->get();
+
+        foreach ($shelves as $shelf) {
+            $branch = Branch::query()->where('id', $shelf->shelf->branch_id)->where('status', 1)->first();
+            $end_work = $branch->end_of_work ?? "21:00";
+            $expire = Carbon::parse($end_work)->subMinutes(30);
+
+            if (Carbon::now()->greaterThanOrEqualTo($expire)) {
+                $this::autoOrdering(['shelf_id' => $shelf->shelf_id, 'order_priority' => $shelf->order_by]);
+                (new ShelfService())->moveToProduct($shelf->shelf_id, 1);
+            }
+        }
     }
 }
