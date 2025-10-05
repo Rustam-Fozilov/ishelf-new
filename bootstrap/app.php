@@ -1,6 +1,8 @@
 <?php
 
 use App\Console\Commands\AutoOrderingCommand;
+use App\Console\Commands\BackUpCommand;
+use App\Console\Commands\BackUpMoveCommand;
 use App\Console\Commands\BranchSyncCommand;
 use Illuminate\Foundation\Application;
 use Illuminate\Console\Scheduling\Schedule;
@@ -43,6 +45,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('telescope:prune')->dailyAt('00:00');
         $schedule->command(BranchSyncCommand::class)->dailyAt('00:00');
         $schedule->command(AutoOrderingCommand::class)->between('18:00', '23:00')->everyThirtyMinutes();
+        $schedule->command(BackUpCommand::class)->dailyAt('01:00');
+        $schedule->command(BackUpMoveCommand::class)->hourly()->between('02:00', '08:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
