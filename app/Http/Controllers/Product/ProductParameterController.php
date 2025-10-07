@@ -31,4 +31,11 @@ class ProductParameterController extends Controller
         $this->service->update($request->validated());
         return success();
     }
+
+    public function uploadExcel(Request $request)
+    {
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls']);
+        $this->service->uploadExcel($request->file('file'));
+        return success();
+    }
 }

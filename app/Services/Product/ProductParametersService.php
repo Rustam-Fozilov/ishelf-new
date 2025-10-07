@@ -5,13 +5,15 @@ namespace App\Services\Product;
 use App\Http\Integrations\Idea\IdeaConnector;
 use App\Http\Integrations\Idea\Requests\ProductAttributeRequest;
 use App\Http\Integrations\Idea\Requests\SearchProductBySku;
+use App\Imports\Product\ParameterImport;
 use App\Models\ExceptionLog;
 use App\Models\Product\Parameter;
 use App\Models\Product\Product;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductParametersService
 {
-    public static function list(array $data)
+    public function list(array $data)
     {
         $order_by = $data['order_by'] ?? 'ordering';
         $order_direction = $data['order_direction'] ?? 'asc';
@@ -34,7 +36,7 @@ class ProductParametersService
             ->get();
     }
 
-    public static function update(array $data): void
+    public function update(array $data): void
     {
         foreach ($data['parameters'] as $item) {
             $parameter = Parameter::query()->where('category_sku', $data['category_sku'])->where('key', $item['key'])->first();
@@ -46,6 +48,11 @@ class ProductParametersService
             ]);
             $parameter->products()->update(['ordering' => $item['ordering'] ?? null]);
         }
+    }
+
+    public function uploadExcel($file): void
+    {
+        Excel::queueImport(new ParameterImport(), $file);
     }
 
     public static function getParametersFromIdea(Product $product)
