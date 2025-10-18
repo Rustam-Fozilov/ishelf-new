@@ -113,6 +113,6 @@ class ApplicationService
         if (!$app) throwError("Ariza topilmadi!");
 
         $app->update(['status' => -1]);
-        $app->history()->create(['step' => -1, 'user_id' => auth()->id()]);
+        $app->history()->create(['step' => -1, 'user_id' => auth()->id(), 'comment' => "o'chirildi"]);
     }
 }

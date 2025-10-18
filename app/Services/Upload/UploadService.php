@@ -5,6 +5,7 @@ namespace App\Services\Upload;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use App\Models\Upload;
@@ -146,5 +147,31 @@ class UploadService
         $second_dir = substr($file_name, 1, 1);
 
         return "{$first_dir}/{$second_dir}";
+    }
+
+    public function deleteInactiveUploads(): void
+    {
+        $db = DB::getDatabaseName();
+
+        $columns = DB::table('information_schema.key_column_usage')
+            ->where('referenced_table_schema', $db)
+            ->where('referenced_table_name', 'uploads')
+            ->select('table_name', 'column_name')
+            ->get();
+
+        $upload_ids = [];
+
+        foreach ($columns as $col) {
+            $ids = DB::table($col->TABLE_NAME)->pluck($col->COLUMN_NAME)->filter()->toArray();
+            $upload_ids = array_merge($upload_ids, $ids);
+        }
+
+        $upload_ids = array_unique($upload_ids);
+        $uploads = Upload::query()->whereNotIn('id', $upload_ids)->where('created_at', '<', today()->subDays(2))->get();
+
+        foreach ($uploads as $upload) {
+            $this->file = $upload;
+            $this->deleteFileByPath();
+        }
     }
 }

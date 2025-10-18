@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PriceTag\PriceTagController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -162,7 +163,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::group(['prefix' => 'price_tag'], function () {
-        //
+        Route::get('list', [PriceTagController::class, 'list']);
+        Route::post('print', [PriceTagController::class, 'print']);
     });
 
     Route::group(['prefix' => 'v2'], function () {

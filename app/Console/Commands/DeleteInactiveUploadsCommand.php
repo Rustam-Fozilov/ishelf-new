@@ -2,30 +2,30 @@
 
 namespace App\Console\Commands;
 
-use App\Services\PriceTag\PriceTagService;
+use App\Services\Upload\UploadService;
 use Illuminate\Console\Command;
 
-class CheckSennikActiveCommand extends Command
+class DeleteInactiveUploadsCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:check-sennik-active-command';
+    protected $signature = 'app:delete-inactive-uploads';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = "Sennik vaqti tugagan bo'lsa neaktiv qilish";
+    protected $description = 'ishlatilmayotgan uploads tabledagi fayllarni o\'chirish';
 
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        PriceTagService::checkSennikActive();
+        (new UploadService())->deleteInactiveUploads();
     }
 }

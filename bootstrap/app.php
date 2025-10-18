@@ -5,6 +5,7 @@ use App\Console\Commands\BackUpCommand;
 use App\Console\Commands\BackUpMoveCommand;
 use App\Console\Commands\BranchSyncCommand;
 use App\Console\Commands\CheckSennikActiveCommand;
+use App\Console\Commands\DeleteInactiveUploadsCommand;
 use Illuminate\Foundation\Application;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command(BranchSyncCommand::class)->dailyAt('00:00');
         $schedule->command(AutoOrderingCommand::class)->between('18:00', '23:00')->everyThirtyMinutes();
         $schedule->command(CheckSennikActiveCommand::class)->dailyAt('01:00');
+        $schedule->command(DeleteInactiveUploadsCommand::class)->dailyAt('01:00');
         $schedule->command(BackUpCommand::class)->dailyAt('01:00');
         $schedule->command(BackUpMoveCommand::class)->hourly()->between('02:00', '08:00');
     })
