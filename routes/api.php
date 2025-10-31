@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\PriceTag\PriceTagController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -14,6 +13,7 @@ use App\Http\Controllers\Upload\UploadController;
 use App\Http\Controllers\Shelf\ShelfTempController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\PrintLog\PrintLogController;
+use App\Http\Controllers\PriceTag\PriceTagController;
 use App\Http\Controllers\Category\CategoryBrandController;
 use App\Http\Controllers\Application\ApplicationController;
 use App\Http\Controllers\Product\ProductParameterController;
@@ -21,8 +21,8 @@ use App\Http\Controllers\Shelf\ShelfStockPriorityController;
 use App\Http\Controllers\Category\ProductCategoryController;
 
 Route::group(['middleware' => 'projects_token'], function () {
-    Route::post('product_log', [ProductController::class, 'productLog']);
     Route::post('price_tag', [ProductController::class, 'createPriceTag']);
+    Route::post('product_log', [ProductController::class, 'productLog']);
     Route::post('price_months', [ProductController::class, 'createPriceMonths']);
 });
 

@@ -32,7 +32,7 @@ class ShelfTempService
     public ProductShelfInterface $productService;
 
     public function __construct(
-        int $category_sku = null,
+        ?int  $category_sku = null,
         float $default = 0.0,
         float $space = 0.0
     )
@@ -151,9 +151,9 @@ class ShelfTempService
         return $ordering;
     }
 
-    public static function tempAddEmptyProduct($shelf_id, $ordering, $place, $floor, $floor_ordering, $size): void
+    public static function tempAddEmptyProduct($shelf_id, $ordering, $place, $floor, $floor_ordering, $size)
     {
-        ProductShelfTemp::query()->create([
+        return ProductShelfTemp::query()->create([
             'size'           => $size,
             'place'          => $place,
             'floor'          => $floor,

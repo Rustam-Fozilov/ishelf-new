@@ -9,7 +9,6 @@ use App\Http\Requests\Shelf\ListRequest;
 use App\Http\Requests\Shelf\UpdatePhoneTableRequest;
 use App\Http\Requests\Shelf\UploadPhoneImageRequest;
 use App\Http\Resources\Resource;
-use App\Models\Shelf\Shelf;
 use App\Services\RolePerm\PermissionService;
 use App\Services\Shelf\PhoneShelfService;
 use App\Services\Shelf\ShelfService;

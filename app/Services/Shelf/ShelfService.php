@@ -364,7 +364,7 @@ class ShelfService
         ]);
     }
 
-    public function checkBySkuOrdering(int $shelf_id, int $ordering, int $sku = null): ?ProductShelf
+    public function checkBySkuOrdering(int $shelf_id, int $ordering, ?int $sku = null): ?ProductShelf
     {
         return ProductShelf::query()
             ->where('sku', $sku)
@@ -386,8 +386,7 @@ class ShelfService
     {
         $last_change = ShelfChangeService::getLastChange($shelf_id, 'user_info');
 
-        $shelf = ProductShelf::query()
-            ->with(['product','product_attr'])
+        $shelf = ProductShelf::with(['product','product_attr'])
             ->with(['change' => function ($query) use ($last_change) {
                 $query->where('id', $last_change->id);
             }])
