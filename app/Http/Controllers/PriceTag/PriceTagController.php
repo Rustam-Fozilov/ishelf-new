@@ -114,4 +114,46 @@ class PriceTagController extends Controller
         $this->service->attachBranch($request->validated());
         return success();
     }
+
+    public function groupByCategoryList(int $id, Request $request): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTag.list');
+        $data = $this->service->groupByCategoryList($id, $request->all());
+        return success($data);
+    }
+
+    public function groupByCategoryShow(int $sennik_id, $sku, Request $request): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTag.list');
+        $data = $this->service->groupByCategoryShow($sennik_id, $sku, $request->all());
+        return success($data);
+    }
+
+    public function groupByPrintTypeList(int $id, Request $request): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTag.list');
+        $data = $this->service->groupByPrintTypeList($id, $request->all());
+        return success($data);
+    }
+
+    public function groupByPrintTypeShow(int $sennik_id, string $type, Request $request): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTag.list');
+        $data = $this->service->groupByPrintTypeShow($sennik_id, $type, $request->all());
+        return success($data);
+    }
+
+    public function groupByPrintedList(int $sennik_id, Request $request): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTag.list');
+        $data = $this->service->groupByPrintedList($sennik_id, $request->all());
+        return success($data);
+    }
+
+    public function groupByUnPrintedList(int $sennik_id, Request $request): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTag.list');
+        $data = $this->service->groupByUnPrintedList($sennik_id, $request->all());
+        return success($data);
+    }
 }

@@ -18,6 +18,7 @@ use App\Models\User\UserBranch;
 use App\Services\RolePerm\PermissionService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PriceTagService
 {
@@ -574,6 +575,268 @@ class PriceTagService
     {
         $sennik = Sennik::query()->find($data['sennik_id']);
         $sennik->branches()->sync($data['branches']);
+    }
+
+    public function groupByCategoryList(int $id, array $data)
+    {
+        $list = Sennik::query()
+            ->join('price_tag_goods', 'price_tag_goods.sennik_id', '=', 'price_tag_senniks.id')
+            ->join('product_categories', 'product_categories.sku', '=', 'price_tag_goods.category_sku')
+            ->where('price_tag_senniks.id', $id)
+            ->when(isset($data['category_sku']), function ($query) use ($data) {
+                $query->where('price_tag_goods.category_sku', $data['category_sku']);
+            })
+            ->select([
+                'price_tag_senniks.name as sennik_name',
+                'price_tag_goods.category_sku',
+                'product_categories.title',
+                DB::raw('count(price_tag_goods.category_sku) as count')
+            ])
+            ->groupBy('price_tag_goods.category_sku', 'price_tag_senniks.name');
+
+        $skus = self::getWithPerm($list, true);
+        $perm = PermissionService::getAllow('priceTag.list');
+        if (auth()->user()->is_admin == 0 && $perm == 'own') $list->whereIn('price_tag_goods.sku', $skus);
+
+        return $list
+            ->groupBy('price_tag_goods.category_sku', 'price_tag_senniks.name')
+            ->get();
+    }
+
+    public function groupByCategoryShow(int $sennik_id, $sku, array $data)
+    {
+        $goods = PriceTagGood::with(['months', 'months_info', 'product.category', 'product.brand', 'product.parameters.parameter'])
+            ->where('sennik_id', $sennik_id)
+            ->where('category_sku', $sku)
+            ->when(isset($data['search']), function ($query) use ($data) {
+                $query->whereHas('product', function ($query) use ($data) {
+                    $query->where('name', 'like', '%' . translit($data['search'])['lat'] . '%')
+                        ->orWhere('name', 'like', '%' . translit($data['search'])['cyr'] . '%')
+                        ->orWhere('sku', $data['search']);
+                });
+            })
+            ->when(!empty($data['skus']), function ($query) use ($data) {
+                $query->whereIn('sku', $data['skus']);
+            })
+            ->when(isset($data['only_shelf']), function ($query) use ($data) {
+                $user_id = auth()->id();
+                $user_branches = Cache::remember("user_{$user_id}_branches", now()->addHours(1), function () {
+                    return auth()->user()->branches()->pluck('branch_id')->toArray();
+                });
+                $shelves = Cache::remember("user_{$user_id}_shelves", now()->addHours(1), function () use ($user_branches) {
+                    return Shelf::query()->whereIn('branch_id', $user_branches)->pluck('id')->toArray();
+                });
+                $result = ProductShelf::query()
+                    ->whereIn('shelf_id', $shelves)
+                    ->where('sku', '!=', null)
+                    ->distinct('sku')
+                    ->pluck('sku')
+                    ->toArray();
+
+                if ($data['only_shelf'] == 1) {
+                    $query->whereIn('price_tag_goods.sku', array_unique($result));
+                } else {
+                    $query->whereNotIn('price_tag_goods.sku', array_unique($result));
+                }
+            });
+
+        $goods = $this->getWithPerm($goods)->get();
+        return $this->checkExistsOnShelf($goods);
+    }
+
+    public function groupByPrintTypeList(int $id, array $data)
+    {
+        $list = Sennik::query()
+            ->join('price_tag_goods', 'price_tag_goods.sennik_id', '=', 'price_tag_senniks.id')
+            ->join('product_categories', 'product_categories.sku', '=', 'price_tag_goods.category_sku')
+            ->where('price_tag_senniks.id', $id)
+            ->whereNotNull('product_categories.print_type')
+            ->select([
+                'price_tag_senniks.id as sennik_id',
+                'price_tag_senniks.name as sennik_name',
+                'product_categories.print_type',
+                DB::raw('count(product_categories.print_type) as count')
+            ]);
+
+        $skus = self::getWithPerm($list, true);
+        $perm = PermissionService::getAllow('priceTag.list');
+        if (auth()->user()->is_admin == 0 && $perm == 'own') $list->whereIn('price_tag_goods.sku', $skus);
+
+        return $list
+            ->groupBy('product_categories.print_type', 'price_tag_senniks.name', 'price_tag_senniks.id')
+            ->get();
+    }
+
+    public function groupByPrintTypeShow(int $sennik_id, string $type, array $data)
+    {
+        $goods = PriceTagGood::with(['months', 'months_info', 'product.category', 'product.brand', 'product.parameters.parameter'])
+            ->where('sennik_id', $sennik_id)
+            ->whereHas('product.category', function ($query) use ($type) {
+                $query->where('print_type', $type);
+            })
+            ->when(isset($data['search']), function ($query) use ($data) {
+                $query->whereHas('product', function ($query) use ($data) {
+                    $query->where('name', 'like', '%' . translit($data['search'])['lat'] . '%')
+                        ->orWhere('name', 'like', '%' . translit($data['search'])['cyr'] . '%')
+                        ->orWhere('sku', $data['search']);
+                });
+            })
+            ->when(!empty($data['skus']), function ($query) use ($data) {
+                $query->whereIn('sku', $data['skus']);
+            })
+            ->when(isset($data['category_sku']), function ($query) use ($data) {
+                $query->where('category_sku', $data['category_sku']);
+            })
+            ->when(isset($data['only_shelf']), function ($query) use ($data) {
+                $user_id = auth()->id();
+                $user_branches = Cache::remember("user_{$user_id}_branches", now()->addHours(1), function () {
+                    return auth()->user()->branches()->pluck('branch_id')->toArray();
+                });
+                $shelves = Cache::remember("user_{$user_id}_shelves", now()->addHours(1), function () use ($user_branches) {
+                    return Shelf::query()->whereIn('branch_id', $user_branches)->pluck('id')->toArray();
+                });
+                $result = ProductShelf::query()
+                    ->whereIn('shelf_id', $shelves)
+                    ->where('sku', '!=', null)
+                    ->distinct('sku')
+                    ->pluck('sku')
+                    ->toArray();
+
+                if ($data['only_shelf'] == 1) {
+                    $query->whereIn('price_tag_goods.sku', array_unique($result));
+                } else {
+                    $query->whereNotIn('price_tag_goods.sku', array_unique($result));
+                }
+            });
+
+        $goods = $this->getWithPerm($goods)->get();
+        return $this->checkExistsOnShelf($goods);
+    }
+
+    public function groupByPrintedList(int $sennik_id, array $data): array
+    {
+        $order_by = $data['order_by'] ?? 'price_tag_goods.id';
+        $order_direction = $data['order'] ?? 'desc';
+
+        $template = Sennik::query()->find($sennik_id)->template;
+        $goods = PriceTagGood::with(['months', 'months_info', 'product.category', 'product.brand', 'product.parameters.parameter'])
+            ->join('price_tag_prints', function ($query) {
+                $query->on('price_tag_prints.sku', '=', 'price_tag_goods.sku')
+                    ->where('price_tag_prints.type', 'print')
+                    ->where('price_tag_prints.user_id', auth()->id());
+            })
+            ->join('product_categories', 'product_categories.sku', '=', 'price_tag_goods.category_sku')
+            ->where('price_tag_prints.sennik_id', $sennik_id)
+            ->where('price_tag_goods.sennik_id', $sennik_id)
+            ->when(isset($data['search']), function ($query) use ($data) {
+                $query->whereHas('product', function ($query) use ($data) {
+                    $query->where('name', 'like', '%' . translit($data['search'])['lat'] . '%')
+                        ->orWhere('name', 'like', '%' . translit($data['search'])['cyr'] . '%')
+                        ->orWhere('sku', $data['search']);
+                });
+            })
+            ->when(isset($data['category_sku']), function ($query) use ($data) {
+                $query->where('category_sku', $data['category_sku']);
+            })
+            ->when(!empty($data['skus']), function ($query) use ($data) {
+                $query->whereIn('price_tag_goods.sku', $data['skus']);
+            })
+            ->when(isset($data['only_shelf']), function ($query) use ($data) {
+                $user_id = auth()->id();
+                $user_branches = Cache::remember("user_{$user_id}_branches", now()->addHours(1), function () {
+                    return auth()->user()->branches()->pluck('branch_id')->toArray();
+                });
+                $shelves = Cache::remember("user_{$user_id}_shelves", now()->addHours(1), function () use ($user_branches) {
+                    return Shelf::query()->whereIn('branch_id', $user_branches)->pluck('id')->toArray();
+                });
+                $result = ProductShelf::query()
+                    ->whereIn('shelf_id', $shelves)
+                    ->where('sku', '!=', null)
+                    ->distinct('sku')
+                    ->pluck('sku')
+                    ->toArray();
+
+                if ($data['only_shelf'] == 1) {
+                    $query->whereIn('price_tag_goods.sku', array_unique($result));
+                } else {
+                    $query->whereNotIn('price_tag_goods.sku', array_unique($result));
+                }
+            })
+            ->select('price_tag_goods.*', 'product_categories.print_type')
+            ->distinct('price_tag_goods.sku')
+            ->orderBy($order_by, $order_direction);
+
+        $goods = $this->getWithPerm($goods)->get();
+        $goods = $this->checkExistsOnShelf($goods);
+
+        return [
+            'template' => $template,
+            'goods' => $goods
+        ];
+    }
+
+    public function groupByUnPrintedList(int $sennik_id, array $data): array
+    {
+        $order_by = $data['order_by'] ?? 'price_tag_goods.id';
+        $order_direction = $data['order'] ?? 'desc';
+
+        $template = Sennik::query()->find($sennik_id)->template;
+        $goods = PriceTagGood::with(['months', 'months_info', 'product.category', 'product.brand', 'product.parameters.parameter'])
+            ->join('product_categories', 'product_categories.sku', '=', 'price_tag_goods.category_sku')
+            ->where('price_tag_goods.sennik_id', $sennik_id)
+            ->when(isset($data['search']), function ($query) use ($data) {
+                $query->whereHas('product', function ($query) use ($data) {
+                    $query->where('name', 'like', '%' . translit($data['search'])['lat'] . '%')
+                        ->orWhere('name', 'like', '%' . translit($data['search'])['cyr'] . '%')
+                        ->orWhere('sku', $data['search']);
+                });
+            })
+            ->when(isset($data['category_sku']), function ($query) use ($data) {
+                $query->where('price_tag_goods.category_sku', $data['category_sku']);
+            })
+            ->whereNotIn('price_tag_goods.sku', function ($query) use ($sennik_id) {
+                $query
+                    ->select('sku')
+                    ->from('price_tag_prints')
+                    ->where('price_tag_prints.user_id', auth()->id())
+                    ->where('price_tag_prints.type', 'print')
+                    ->where('price_tag_prints.sennik_id', $sennik_id);
+            })
+            ->when(!empty($data['skus']), function ($query) use ($data) {
+                $query->whereIn('price_tag_goods.sku', $data['skus']);
+            })
+            ->when(isset($data['only_shelf']), function ($query) use ($data) {
+                $user_id = auth()->id();
+                $user_branches = Cache::remember("user_{$user_id}_branches", now()->addHours(1), function () {
+                    return auth()->user()->branches()->pluck('branch_id')->toArray();
+                });
+                $shelves = Cache::remember("user_{$user_id}_shelves", now()->addHours(1), function () use ($user_branches) {
+                    return Shelf::query()->whereIn('branch_id', $user_branches)->pluck('id')->toArray();
+                });
+                $result = ProductShelf::query()
+                    ->whereIn('shelf_id', $shelves)
+                    ->where('sku', '!=', null)
+                    ->distinct('sku')
+                    ->pluck('sku')
+                    ->toArray();
+
+                if ($data['only_shelf'] == 1) {
+                    $query->whereIn('price_tag_goods.sku', array_unique($result));
+                } else {
+                    $query->whereNotIn('price_tag_goods.sku', array_unique($result));
+                }
+            })
+            ->select('price_tag_goods.*', 'product_categories.print_type')
+            ->distinct('price_tag_goods.sku')
+            ->orderBy($order_by, $order_direction);
+
+        $goods = $this->getWithPerm($goods)->get();
+        $goods = $this->checkExistsOnShelf($goods);
+
+        return [
+            'template' => $template,
+            'goods' => $goods
+        ];
     }
 
     public static function checkSennikActive(): void
