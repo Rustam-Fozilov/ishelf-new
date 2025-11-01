@@ -2,8 +2,10 @@
 
 namespace App\Models\PriceTag;
 
+use App\Models\Branch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sennik extends Model
@@ -29,5 +31,15 @@ class Sennik extends Model
     public function goods(): HasMany
     {
         return $this->hasMany(PriceTagGood::class, 'sennik_id', 'id');
+    }
+
+    public function branches(): BelongsToMany
+    {
+        return $this->belongsToMany(Branch::class, 'price_tag_branches', 'sennik_id', 'branch_id')->withTimestamps();
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
     }
 }

@@ -262,7 +262,6 @@ class TvService implements ProductShelfInterface
 
     public function deleteTempProduct(ProductShelfTemp $temp): void
     {
-
         DB::beginTransaction();
 
         try {

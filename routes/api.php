@@ -147,6 +147,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('add/product',[ShelfTempController::class, 'tempAddProduct']);
         Route::delete('delete/product/{temp_id}',[ShelfTempController::class, 'deleteTempProduct']);
 
+        Route::post('auto/v2', [ShelfController::class, 'makeAutoOrderingV2']);
         Route::post('auto', [ShelfTempController::class, 'makeAutoOrdering']);
         Route::post('auto/props/save', [ShelfTempController::class, 'saveAutoOrderingProps']);
         Route::delete('auto/props/delete/{shelf_id}', [ShelfTempController::class, 'deleteAutoOrderingProps']);
@@ -165,6 +166,40 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'price_tag'], function () {
         Route::get('list', [PriceTagController::class, 'list']);
         Route::post('print', [PriceTagController::class, 'print']);
+
+        Route::prefix('analytic')->group(function () {
+            Route::get('list', [PriceTagController::class, 'analyticList']);
+            Route::get('branch/{branch_id}/sennik/{sennik_id}', [PriceTagController::class, 'analyticByBranchSennik']);
+        });
+
+        Route::prefix('sennik')->group(function () {
+            Route::get('list', [PriceTagController::class, 'sennikList']);
+            Route::get('temp/list', [PriceTagController::class, 'sennikTempList']);
+            Route::get('select', [PriceTagController::class, 'sennikSelect']);
+            Route::get('show/{id}', [PriceTagController::class, 'sennikShow']);
+            Route::get('show/temp/{id}', [PriceTagController::class, 'sennikShowTemp']);
+            Route::post('attach/template', [PriceTagController::class, 'sennikAttachTemplate']);
+            Route::post('check/amount/{id}', [PriceTagController::class, 'sennikCheckAmount']);
+            Route::post('change/step', [PriceTagController::class, 'sennikChangeStep']);
+            Route::delete('delete/{id}', [PriceTagController::class, 'sennikDelete']);
+            Route::post('attach/branch', [PriceTagController::class, 'attachBranch']);
+
+            Route::prefix('{id}/group_by')->group(function () {
+                Route::get('category', [PriceTagController::class, 'groupByCategoryList']);
+                Route::get('category/{sku}', [PriceTagController::class, 'groupByCategoryShow']);
+                Route::get('print_type', [PriceTagController::class, 'groupByPrintTypeList']);
+                Route::get('print_type/{type}', [PriceTagController::class, 'groupByPrintTypeShow']);
+                Route::get('printed', [PriceTagController::class, 'groupByPrintedList']);
+                Route::get('unprinted', [PriceTagController::class, 'groupByUnPrintedList']);
+            });
+        });
+
+        Route::prefix('template')->group(function () {
+            Route::get('list', [PriceTagController::class, 'listTemplate']);
+            Route::get('show/{id}', [PriceTagController::class, 'showTemplate']);
+            Route::post('save', [PriceTagController::class, 'saveTemplate']);
+            Route::delete('delete/{id}', [PriceTagController::class, 'deleteTemplate']);
+        });
     });
 
     Route::group(['prefix' => 'v2'], function () {
