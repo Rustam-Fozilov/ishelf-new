@@ -2,6 +2,7 @@
 
 namespace App\Services\Telegraph;
 
+use App\Models\PriceTag\Sennik;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use App\Models\Telegram\BotAction;
@@ -197,5 +198,22 @@ class TelegraphService
         ]);
 
         $this->chat->deleteKeyboard($message_id)->send();
+    }
+
+    public static function notifyNewSennik($user_id, $sennik_ids): void
+    {
+        $user = User::query()->find($user_id);
+        $senniks = Sennik::query()->whereIn('id', $sennik_ids)->get();
+
+        $message = "🎟 Yangi segment keldi." . PHP_EOL . PHP_EOL;
+
+        foreach ($senniks as $sennik) {
+            $message .= $sennik->name . PHP_EOL;
+        }
+
+        $chat = TelegraphChat::query()->where('chat_id', $user->telegraph_chat_id)->first();
+        $chat->message($message)->send();
+        $chat = TelegraphChat::query()->where('chat_id', '705320870')->first();
+        $chat->message($message)->send();
     }
 }

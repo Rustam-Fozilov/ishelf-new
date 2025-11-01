@@ -3,10 +3,13 @@
 namespace App\Services\PriceTag;
 
 use App\Jobs\PriceTag\MoveSennikJob;
+use App\Jobs\PriceTag\NotifySennikJob;
+use App\Jobs\PriceTag\ProcessPriceTagPrintJob;
 use App\Models\Branch;
 use App\Models\PriceTag\PriceTagGood;
 use App\Models\PriceTag\PriceTagGoodTemp;
 use App\Models\PriceTag\PriceTagPrints;
+use App\Models\PriceTag\PriceTagTemplate;
 use App\Models\PriceTag\Sennik;
 use App\Models\PriceTag\SennikTemp;
 use App\Models\Product\ProductMonth;
@@ -375,7 +378,6 @@ class PriceTagService
         $goods = $this->getWithPerm($goods)->get();
         $goods = $this->checkExistsOnShelf($goods);
 
-        // TODO: job yaratvorish kere
         dispatch(new ProcessPriceTagPrintJob(auth()->id(), $id, 'see'));
         return $sennik->setRelation('goods', $goods);
     }
@@ -437,7 +439,7 @@ class PriceTagService
         }
 
         $goods = $goods->get();
-        $goods = self::checkExistsOnShelf($goods);
+        $goods = $this->checkExistsOnShelf($goods);
 
         return $sennik->setRelation('goods', $goods);
     }
@@ -520,7 +522,6 @@ class PriceTagService
             ->whereNotNull('telegraph_chat_id')
             ->get();
 
-        // TODO: job yaratvorish kere
         foreach ($users as $user) {
             dispatch(new NotifySennikJob($user->id, $data['sennik_ids']));
         }
@@ -594,7 +595,7 @@ class PriceTagService
             ])
             ->groupBy('price_tag_goods.category_sku', 'price_tag_senniks.name');
 
-        $skus = self::getWithPerm($list, true);
+        $skus = $this->getWithPerm($list, true);
         $perm = PermissionService::getAllow('priceTag.list');
         if (auth()->user()->is_admin == 0 && $perm == 'own') $list->whereIn('price_tag_goods.sku', $skus);
 
@@ -658,7 +659,7 @@ class PriceTagService
                 DB::raw('count(product_categories.print_type) as count')
             ]);
 
-        $skus = self::getWithPerm($list, true);
+        $skus = $this->getWithPerm($list, true);
         $perm = PermissionService::getAllow('priceTag.list');
         if (auth()->user()->is_admin == 0 && $perm == 'own') $list->whereIn('price_tag_goods.sku', $skus);
 
@@ -837,6 +838,39 @@ class PriceTagService
             'template' => $template,
             'goods' => $goods
         ];
+    }
+
+    public function listTemplate(array $data): LengthAwarePaginator
+    {
+        $order_by = $data['order_by'] ?? 'id';
+        $order_direction = $data['order'] ?? 'desc';
+
+        return PriceTagTemplate::with('senniks')
+            ->orderBy($order_by, $order_direction)
+            ->paginate($data['per_page'] ?? 15);
+    }
+
+    public function showTemplate(int $id)
+    {
+        return PriceTagTemplate::query()->find($id);
+    }
+
+    public function saveTemplate(array $data)
+    {
+        $template = new PriceTagTemplate();
+        if (isset($data['id'])) $template = PriceTagTemplate::query()->find($data['id']);
+
+        $template->type = $data['type'];
+        $template->name = $data['name'] ?? $template->name;
+        $template->data = $data['data'];
+        $template->save();
+
+        return $template;
+    }
+
+    public function deleteTemplate(int $id): void
+    {
+        PriceTagTemplate::query()->where('id', $id)->delete();
     }
 
     public static function checkSennikActive(): void

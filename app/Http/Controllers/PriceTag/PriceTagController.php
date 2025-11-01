@@ -8,6 +8,7 @@ use App\Http\Requests\PriceTag\AttachTemplateRequest;
 use App\Http\Requests\PriceTag\ChangeStepRequest;
 use App\Http\Requests\PriceTag\ListRequest;
 use App\Http\Requests\PriceTag\PrintRequest;
+use App\Http\Requests\PriceTag\SaveTemplateRequest;
 use App\Http\Resources\Resource;
 use App\Services\PriceTag\PriceTagService;
 use App\Services\RolePerm\PermissionService;
@@ -155,5 +156,33 @@ class PriceTagController extends Controller
         $this->permissionService->hasPermission('priceTag.list');
         $data = $this->service->groupByUnPrintedList($sennik_id, $request->all());
         return success($data);
+    }
+
+    public function listTemplate(Request $request): Resource
+    {
+        $this->permissionService->hasPermission('priceTagSampler.list');
+        $data = $this->service->listTemplate($request->all());
+        return new Resource($data);
+    }
+
+    public function showTemplate(int $id): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTagSampler.list');
+        $data = $this->service->showTemplate($id);
+        return success($data);
+    }
+
+    public function saveTemplate(SaveTemplateRequest $request): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTagSampler.add');
+        $data = $this->service->saveTemplate($request->validated());
+        return success($data);
+    }
+
+    public function deleteTemplate(int $id): JsonResponse
+    {
+        $this->permissionService->hasPermission('priceTagSampler.add');
+        $this->service->deleteTemplate($id);
+        return success();
     }
 }
