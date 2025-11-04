@@ -147,7 +147,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('add/product',[ShelfTempController::class, 'tempAddProduct']);
         Route::delete('delete/product/{temp_id}',[ShelfTempController::class, 'deleteTempProduct']);
 
-        Route::post('auto/v2', [ShelfController::class, 'makeAutoOrderingV2']);
+        Route::post('auto/v2', [ShelfTempController::class, 'makeAutoOrderingV2']);
         Route::post('auto', [ShelfTempController::class, 'makeAutoOrdering']);
         Route::post('auto/props/save', [ShelfTempController::class, 'saveAutoOrderingProps']);
         Route::delete('auto/props/delete/{shelf_id}', [ShelfTempController::class, 'deleteAutoOrderingProps']);

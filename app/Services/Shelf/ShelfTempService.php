@@ -197,6 +197,12 @@ class ShelfTempService
         return $this->productService->tempAutoOrderProduct($shelf, $params['order_priority']);
     }
 
+    public function autoOrderingV2(array $params): Collection
+    {
+        $shelf = Shelf::query()->where('status', 1)->find($params['shelf_id']);
+        return $this->productService->tempAutoOrderProductV2($shelf, $params['order_priority']);
+    }
+
     public static function getStocksForShelf(Shelf $shelf)
     {
         $branch = Branch::query()->where('id', $shelf->branch_id)->first();

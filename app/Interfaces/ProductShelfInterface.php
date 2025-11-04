@@ -15,4 +15,6 @@ interface ProductShelfInterface
     public function deleteTempProduct(ProductShelfTemp $temp): void;
 
     public function tempAutoOrderProduct(Shelf $shelf, array $priority): Collection;
+
+    public function tempAutoOrderProductV2(Shelf $shelf, array $priority);
 }

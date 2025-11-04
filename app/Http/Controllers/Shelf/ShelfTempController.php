@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shelf;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductShelfTemp\AutoOrderingV2Request;
 use App\Services\Shelf\ShelfTempService;
 use App\Http\Requests\AutoOrdering\SaveAutoOrderingRequest;
 use App\Http\Requests\ProductShelfTemp\AddProductRequest;
@@ -38,6 +39,12 @@ class ShelfTempController extends Controller
     public function makeAutoOrdering(AutoOrderingRequest $request)
     {
         $data = $this->service->autoOrdering($request->validated());
+        return success($data);
+    }
+
+    public function makeAutoOrderingV2(AutoOrderingV2Request $request)
+    {
+        $data = $this->service->autoOrderingV2($request->validated());
         return success($data);
     }
 
