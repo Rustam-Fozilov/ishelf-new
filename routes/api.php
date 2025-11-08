@@ -52,10 +52,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('list', [ShelfController::class, 'list']);
         Route::get('get/{id}', [ShelfController::class, 'getById']);
         Route::post('add', [ShelfController::class, 'add']);
+        Route::post('add/v2', [ShelfController::class, 'addShelfV2']);
         Route::put('update/{id}', [ShelfController::class, 'update']);
         Route::delete('delete/skus', [ShelfController::class, 'deleteSkus']);
         Route::delete('delete/{id}', [ShelfController::class, 'delete']);
         Route::post('update/phone/table', [ShelfController::class, 'updatePhoneTable']);
+        Route::post('parameters', [ShelfController::class, 'parameters']);
     });
 
     Route::group(['prefix' => 'priority'], function() {
