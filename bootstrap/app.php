@@ -14,18 +14,16 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         using: function () {
-            $lang = getLang();
-
             Route::middleware('api')
-                ->prefix('api' . $lang)
+                ->prefix('api/{locale?}')
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('api')
-                ->prefix('api' . $lang)
+                ->prefix('api/{locale?}')
                 ->group(base_path('routes/role_perm.php'));
 
             Route::middleware('web')
-                ->prefix($lang)
+                ->prefix('{locale?}')
                 ->group(base_path('routes/web.php'));
 
             Route::middleware('admin')
@@ -40,12 +38,17 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->group('api', [
-            'throttle:150,1'
+            'throttle:150,1',
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
+        $middleware->group('web', [
+            \App\Http\Middleware\SetLocale::class,
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('telescope:prune')->dailyAt('00:00');
-        $schedule->command(BranchSyncCommand::class)->dailyAt('00:00');
+//        $schedule->command(BranchSyncCommand::class)->dailyAt('00:00');
         $schedule->command(AutoOrderingCommand::class)->between('18:00', '23:00')->everyThirtyMinutes();
         $schedule->command(CheckSennikActiveCommand::class)->dailyAt('01:00');
         $schedule->command(DeleteInactiveUploadsCommand::class)->dailyAt('01:00');
