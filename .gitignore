@@ -22,9 +22,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-features
 
 **/caddy
 frankenphp
 frankenphp-worker.php
 run.sh
+rr
+.rr.yaml
