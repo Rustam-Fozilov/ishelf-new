@@ -14,6 +14,10 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         using: function () {
+            Route::middleware('web')
+                ->prefix('{locale?}')
+                ->group(base_path('routes/web.php'));
+
             Route::middleware('api')
                 ->prefix('api/{locale?}')
                 ->group(base_path('routes/api.php'));
@@ -21,10 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api/{locale?}')
                 ->group(base_path('routes/role_perm.php'));
-
-            Route::middleware('web')
-                ->prefix('{locale?}')
-                ->group(base_path('routes/web.php'));
 
             Route::middleware('admin')
                 ->prefix('test')
