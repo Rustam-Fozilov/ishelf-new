@@ -4,7 +4,7 @@
 4. Absolutely fix TV ordering
 5. Universal way to keep clean uploads table and it's files ✓
 6. Test cases
-7. Docs with Scalar
-8. Docker
+7. Docker
+8. Docs with Scalar (OpenAPI style)
 9. Laravel Sail (Docker terminal)
 10. Laravel Pint (code-formatting)
