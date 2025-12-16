@@ -23,7 +23,7 @@
     @endif
 
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-        <form action="/login" method="POST" class="space-y-5">
+        <form action="/login" method="POST" class="space-y-4">
             @csrf
             <div>
                 <label for="email" class="block text-sm/6 font-medium text-gray-900">Phone</label>

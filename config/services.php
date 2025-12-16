@@ -44,4 +44,9 @@ return [
         'base_url' => env('ANKETA_BASE_URL'),
         'token' => env('ANKETA_TOKEN'),
     ],
+
+    'sms' => [
+        'is_on' => env('SMS_IS_ON',false),
+        'is_send' => env('SMS_IS_SEND',false)
+    ],
 ];

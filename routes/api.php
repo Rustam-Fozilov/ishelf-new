@@ -27,6 +27,7 @@ Route::group(['middleware' => 'projects_token'], function () {
 });
 
 Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/login/check_sms', [AuthController::class, 'check_sms']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('auth/me', [AuthController::class, 'me']);
