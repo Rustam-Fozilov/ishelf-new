@@ -1,0 +1,454 @@
+openapi: 3.0.3
+info:
+  title: iShelf API
+  description: |
+    # iShelf Application API Documentation
+
+    **iShelf** is a comprehensive shelf management and product inventory system for retail operations.
+
+    ## Key Features
+    - **Shelf Management** - Manage physical shelves across retail branches
+    - **Product & Stock Management** - Track inventory and stock levels
+    - **Price Tag Management** - Create and manage price tags (senniks)
+    - **Auto-Ordering System** - Automatically fill shelves with products
+    - **Application Workflow** - Handle shelf application requests with multi-step approval
+    - **Telegram Integration** - Real-time notifications via Telegram bot
+
+    ## Authentication
+    This API uses two authentication methods:
+    - **Bearer Token (Sanctum)** - For authenticated user requests
+    - **Projects Token** - For service-to-service communication
+
+    ## Rate Limiting
+    API requests are subject to rate limiting based on Laravel's default configuration.
+
+  version: 1.0.0
+  contact:
+    name: iShelf Development Team
+  license:
+    name: Proprietary
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Users
+    description: User management operations
+  - name: Shelves
+    description: Shelf CRUD and management
+  - name: Products
+    description: Product listing and management
+  - name: Stock
+    description: Stock synchronization
+  - name: Price Tags
+    description: Price tag (sennik) management
+  - name: Ordering
+    description: Temporary shelf arrangements and auto-ordering
+  - name: Branches
+    description: Branch management
+  - name: Categories
+    description: Product category management
+  - name: Applications
+    description: Shelf application workflow
+  - name: Admin
+    description: Administrative operations
+  - name: Upload
+    description: File upload operations
+  - name: Print
+    description: Print log management
+  - name: Regions
+    description: Geographic region management
+  - name: Priorities
+    description: Stock priority configuration
+
+security:
+  - sanctum: []
+
+paths:
+  # ============================================
+  # AUTHENTICATION ENDPOINTS
+  # ============================================
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user with phone and password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - password
+              properties:
+                phone:
+                  type: string
+                  pattern: '^[0-9]{12}$'
+                  example: '998901234567'
+                  description: Phone number (12 digits)
+                password:
+                  type: string
+                  example: 'password123'
+                  description: User password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                    example: '1|abc123def456...'
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/login/check_sms:
+    post:
+      tags:
+        - Authentication
+      summary: Verify SMS code
+      description: Check SMS verification code for login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - code
+              properties:
+                phone:
+                  type: string
+                  pattern: '^[0-9]{12}$'
+                  example: '998901234567'
+                code:
+                  type: string
+                  example: '123456'
+      responses:
+        '200':
+          description: SMS verified successfully
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get authenticated user
+      description: Retrieve current authenticated user information
+      responses:
+        '200':
+          description: User information retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    get:
+      tags:
+        - Authentication
+      summary: Logout user
+      description: Invalidate current authentication token
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 'Logged out successfully'
+
+# ============================================
+# COMPONENTS
+# ============================================
+components:
+  securitySchemes:
+    sanctum:
+      type: http
+      scheme: bearer
+      bearerFormat: 'Sanctum Token'
+      description: Laravel Sanctum authentication token
+
+    projects_token:
+      type: apiKey
+      in: header
+      name: X-Projects-Token
+      description: Service-to-service authentication token
+
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number for pagination
+
+    PerPage:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 15
+      description: Items per page
+
+  responses:
+    Unauthorized:
+      description: Unauthorized - Invalid or missing authentication token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Unauthenticated.'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: 'Resource not found'
+
+    ValidationError:
+      description: Validation error - Invalid request parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              message:
+                type: string
+                example: 'The given data was invalid.'
+              errors:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 'John'
+        surname:
+          type: string
+          example: 'Doe'
+        patronymic:
+          type: string
+          example: 'Smith'
+        phone:
+          type: string
+          example: '998901234567'
+        pinfl:
+          type: string
+          example: '12345678901234'
+        role:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        branches:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              sku:
+                type: integer
+              name:
+                type: string
+        status:
+          type: integer
+          enum: [0, 1]
+          description: 0=inactive, 1=active
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        sku:
+          type: integer
+          description: Unique product identifier
+        name:
+          type: string
+        name_ru:
+          type: string
+        category_sku:
+          type: integer
+        category:
+          type: object
+          properties:
+            sku:
+              type: integer
+            name:
+              type: string
+        brand:
+          type: string
+        attributes:
+          type: object
+          description: Product specifications (varies by category)
+        price:
+          type: number
+          format: float
+        status:
+          type: integer
+          enum: [1, 2]
+          description: 1=active, 2=sold
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Shelf:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: integer
+          description: Shelf type (1-10)
+        category_sku:
+          type: integer
+        category:
+          type: object
+        branch_id:
+          type: integer
+        branch:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            token:
+              type: string
+        product_count:
+          type: integer
+        floor:
+          type: integer
+        size:
+          type: integer
+        is_paddon:
+          type: integer
+          enum: [0, 1]
+        paddon_quantity:
+          type: integer
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PaginatedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            current_page:
+              type: integer
+            data:
+              type: array
+              items:
+                type: object
+            first_page_url:
+              type: string
+            from:
+              type: integer
+            last_page:
+              type: integer
+            last_page_url:
+              type: string
+            next_page_url:
+              type: string
+            path:
+              type: string
+            per_page:
+              type: integer
+            prev_page_url:
+              type: string
+            to:
+              type: integer
+            total:
+              type: integer
