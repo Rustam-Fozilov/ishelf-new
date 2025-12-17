@@ -366,12 +366,21 @@ class ShelfService
 
     public function checkBySkuOrdering(int $shelf_id, int $ordering, ?int $sku = null): ?ProductShelf
     {
-        return ProductShelf::query()
+        $check = ProductShelf::query()
             ->where('sku', $sku)
             ->where('shelf_id', $shelf_id)
             ->where('ordering', $ordering)
             ->first();
 
+        if (!is_null($sku)) {
+            ProductShelf::query()
+                ->whereNull('sku')
+                ->where('shelf_id', $shelf_id)
+                ->where('ordering', $ordering)
+                ->delete();
+        }
+
+        return $check;
     }
 
     public function deleteProductShelf(int $shelf_id, int $ordering): void

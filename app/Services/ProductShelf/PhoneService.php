@@ -240,4 +240,38 @@ class PhoneService implements ProductShelfInterface
                 ]);
         }
     }
+
+    public function tempAutoOrderProductV2(Shelf $shelf, array $priority)
+    {
+        $phoneShelf = PhoneShelfService::getPhoneShelfByShelfId($shelf->id);
+        if ($phoneShelf->isEmpty()) throwError(__('shelf.something_went_wrong'));
+
+        $products = ShelfTempService::getStocksForShelfV2($shelf, $phoneShelf->sum('product_count'));
+        $phoneShelfCollection = collect($phoneShelf);
+
+        $phoneItems = [];
+        $order_priority = $priority;
+
+        foreach ($order_priority as $key => $priority) {
+            foreach ($priority as $item) {
+                $products
+                    ->where('products.brand_sku', '=', $item['main'])
+                    ->when(isset($item['price']), function ($query) use ($item) {
+                        $query->orderBy('products.price', $item['price']);
+                    });
+
+                $product_count_in_phone_shelf = $phoneShelfCollection
+                    ->where('status_zone', '=', $key)
+                    ->where('id', '=', $item['phone_table_id'])
+                    ->pluck('product_count');
+
+                $this->insertProducts($products, $product_count_in_phone_shelf, $shelf, $item, $key, $item['phone_table_id']);
+                $phoneItems[] = ['floor' => $item['phone_table_id'], 'brand_sku' => $item['main']];
+            }
+        }
+
+        ShelfStockPriorityService::createWithPhoneItems($phoneItems, $shelf->id);
+
+        return (new ShelfTempService)->getTempByShelfId($shelf->id);
+    }
 }

@@ -885,4 +885,17 @@ class PriceTagService
             dispatch(new MoveSennikJob($sennik->id));
         }
     }
+
+    public static function moveSennik(int $sennik_id): void
+    {
+        $sennik = Sennik::query()->find($sennik_id);
+        $sennik_temp = SennikTemp::query()->create($sennik->toArray());
+
+        $sennik->goods()->each(function ($good) use ($sennik_temp) {
+            $good_temp = $sennik_temp->goods()->create($good->toArray());
+            $good->months()->each(function ($month) use ($good_temp) {
+                $good_temp->months()->create($month->toArray());
+            });
+        });
+    }
 }

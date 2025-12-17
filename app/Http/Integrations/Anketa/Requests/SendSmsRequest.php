@@ -11,6 +11,13 @@ class SendSmsRequest extends Request implements HasBody
 {
     use HasJsonBody;
 
+    public function __construct(
+        protected string $phone,
+        protected string $message,
+    ) {
+        //
+    }
+
     /**
      * The HTTP method of the request
      */
@@ -23,13 +30,6 @@ class SendSmsRequest extends Request implements HasBody
     public function resolveEndpoint(): string
     {
         return '/api/projects/send_sms_service';
-    }
-
-    public function __construct(
-        protected string $phone,
-        protected string $message,
-    ) {
-        //
     }
 
     public function defaultBody(): array
