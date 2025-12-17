@@ -2,6 +2,7 @@
 
 namespace App\Services\Shelf;
 
+use App\Models\Product\Parameter;
 use App\Models\Upload;
 use App\Models\Shelf\Shelf;
 use App\Models\Shelf\PhoneShelf;
@@ -414,5 +415,17 @@ class ShelfService
     {
         $upload = Upload::query()->where('url', $params['file_url'])->first();
         Shelf::query()->where('id', $params['shelf_id'])->update(['upload_id' => $upload->id]);
+    }
+
+    public function getParameters(array $params)
+    {
+        $shelf = Shelf::query()->find($params['shelf_id']);
+
+        return Parameter::query()
+            ->where('category_sku', $shelf->category_sku)
+            ->where('type', 'excel')
+            ->select(['key', 'name', 'short_name'])
+            ->groupBy(['key', 'name', 'short_name'])
+            ->get();
     }
 }

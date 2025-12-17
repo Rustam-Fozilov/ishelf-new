@@ -58,10 +58,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::delete('delete/skus', [ShelfController::class, 'deleteSkus']);
         Route::delete('delete/{id}', [ShelfController::class, 'delete']);
         Route::post('update/phone/table', [ShelfController::class, 'updatePhoneTable']);
-        Route::post('parameters', [ShelfController::class, 'parameters']);
+        Route::get('parameters', [ShelfController::class, 'getParameters']);
     });
 
-    Route::group(['prefix' => 'priority'], function() {
+    Route::group(['prefix' => 'priority'], function () {
         Route::get('shelf/get/{shelf_id}', [ShelfStockPriorityController::class, 'get']);
         Route::post('shelf/add/{shelf_id}', [ShelfStockPriorityController::class, 'add']);
         Route::delete('shelf/delete/{shelf_id}', [ShelfStockPriorityController::class, 'delete']);
