@@ -166,6 +166,27 @@ class ShelfService
         }
     }
 
+    public function addV2(array $params)
+    {
+        DB::beginTransaction();
+
+        try {
+            $checkService = new ShelfCheckService();
+            $checkService->checkUnique($params['branch_id'], $params['category_sku']);
+
+            $shelf = Shelf::query()->create($params);
+
+            if (!empty($params['items'])) {
+                PhoneShelfService::create($shelf->id, $params['items']);
+            }
+
+            DB::commit();
+            return $shelf;
+        } catch (\Throwable $e) {
+            return throwResponse($e);
+        }
+    }
+
     public function update(int $id, array $params): void
     {
         DB::beginTransaction();

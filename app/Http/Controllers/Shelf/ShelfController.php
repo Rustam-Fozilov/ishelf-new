@@ -44,6 +44,13 @@ class ShelfController extends Controller
         return success();
     }
 
+    public function addV2(AddRequest $request)
+    {
+        $this->permissionService->hasPermission('shelf.add');
+        $this->service->addV2($request->validated());
+        return success();
+    }
+
     public function update(int $id, AddRequest $request)
     {
         $this->permissionService->hasPermission('shelf.update');
