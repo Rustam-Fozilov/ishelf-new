@@ -2,9 +2,9 @@
 
 namespace App\Jobs\ProductCategory;
 
-use App\Services\Product\ProductCategoryService;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\Product\ProductCategoryService;
 
 class UploadAttributesJob implements ShouldQueue
 {

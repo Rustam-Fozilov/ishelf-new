@@ -8,9 +8,6 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 
 class TvImport implements ToCollection
 {
-    /**
-    * @param Collection $collection
-    */
     public function collection(Collection $collection): void
     {
         foreach ($collection as $index => $item) {

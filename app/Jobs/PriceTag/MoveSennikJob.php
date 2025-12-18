@@ -2,9 +2,9 @@
 
 namespace App\Jobs\PriceTag;
 
+use Illuminate\Foundation\Queue\Queueable;
 use App\Services\PriceTag\PriceTagService;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 
 class MoveSennikJob implements ShouldQueue
 {

@@ -3,8 +3,8 @@
 namespace App\Jobs\PriceTag;
 
 use App\Models\PriceTag\PriceTagPrints;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ProcessPriceTagPrintJob implements ShouldQueue
 {

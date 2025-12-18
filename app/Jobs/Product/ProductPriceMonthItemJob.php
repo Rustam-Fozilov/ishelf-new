@@ -3,9 +3,9 @@
 namespace App\Jobs\Product;
 
 use App\Models\Product\Product;
+use Illuminate\Foundation\Queue\Queueable;
 use App\Services\Product\PriceMonthService;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 
 class ProductPriceMonthItemJob implements ShouldQueue
 {

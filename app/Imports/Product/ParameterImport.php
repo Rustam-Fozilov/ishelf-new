@@ -2,11 +2,11 @@
 
 namespace App\Imports\Product;
 
-use App\Models\Product\Parameter;
-use App\Models\Product\Product;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use App\Models\Product\Product;
+use App\Models\Product\Parameter;
+use Illuminate\Support\Collection;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 
