@@ -23,23 +23,15 @@ tags:
   - name: Users
     description: User management operations
   - name: Shelves
-    description: Shelf CRUD and management
+    description: Shelf management
   - name: Products
     description: Product listing and management
-  - name: Stock
-    description: Stock synchronization
   - name: Price Tags
     description: Price tag (sennik) management
-  - name: Auto-ordering
-    description: Temporary shelf arrangements and auto-ordering
   - name: Branches and regions
     description: Branch and regions list
-  - name: Categories
-    description: Product category management
   - name: Applications
     description: Shelf application workflow
-  - name: File upload
-    description: File upload operations
 
 security:
   - sanctum: [ ]
@@ -66,7 +58,7 @@ paths:
                 - password
               properties:
                 phone:
-                  type: string
+                  type: stringENDPOINTS
                   example: '998991234567'
                 password:
                   type: string
@@ -193,10 +185,986 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                example:
-                  - $ref: '#/components/schemas/User'
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
 
+  /shelf/list:
+    get:
+      tags:
+        - Shelves
+      summary: List
+      requestBody:
+        required: false
+        description: Filters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branch_id:
+                  type: integer
+                  example: 1
+                category_sku:
+                  type: integer
+                  example: 117
+                type:
+                  type: integer
+                  example: 2
+                floor:
+                  type: integer
+                  example: 1
+                is_paddon:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+                region_id:
+                  type: integer
+                  example: 5
+                page:
+                  type: integer
+                  minimum: 1
+                  example: 1
+                per_page:
+                  type: integer
+                  minimum: 1
+                  example: 15
+                order_by:
+                  type: string
+                  example: 'created_at'
+                order_direction:
+                  type: string
+                  enum: [asc, desc]
+                  example: 'desc'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Shelf'
+
+  /shelf/get/{id}:
+    get:
+      tags:
+        - Shelves
+      summary: Get
+      parameters:
+        - in: path
+          name: id
+          description: Shelf ID
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shelf'
+
+  /shelf/add:
+    post:
+      tags:
+        - Shelves
+      summary: Add
+      description: Add new shelf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - category_sku
+                - branch_id
+                - is_paddon
+              properties:
+                type:
+                  type: integer
+                  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                  example: 1
+                category_sku:
+                  type: integer
+                  example: 117
+                branch_id:
+                  type: integer
+                  example: 1
+                product_count:
+                  type: integer
+                  example: 10
+                floor:
+                  type: integer
+                  example: 1
+                floor_left:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  example: 5
+                floor_right:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  example: 5
+                size:
+                  type: integer
+                  example: 5
+                left_size:
+                  type: integer
+                  example: 3
+                right_size:
+                  type: integer
+                  example: 3
+                is_paddon:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+                paddon_quantity:
+                  type: integer
+                  example: 2
+                paddon_front_quantity:
+                  type: integer
+                  example: 1
+                paddon_back_quantity:
+                  type: integer
+                  example: 1
+                paddon_size:
+                  type: integer
+                  example: 3
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - type
+                    properties:
+                      type:
+                        type: integer
+                        enum: [1, 2, 3, 4]
+                        example: 1
+                      size:
+                        type: integer
+                        example: 5
+                      status_zone:
+                        type: string
+                        enum: [gold, green, red]
+                        example: gold
+                      product_count:
+                        type: integer
+                        minimum: 1
+                        example: 10
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /shelf/add/v2:
+    post:
+      tags:
+        - Shelves
+      summary: Add V2
+      description: Add new shelf V2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - category_sku
+                - branch_id
+                - is_paddon
+              properties:
+                type:
+                  type: integer
+                  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                  example: 1
+                category_sku:
+                  type: integer
+                  example: 117
+                branch_id:
+                  type: integer
+                  example: 1
+                product_count:
+                  type: integer
+                  example: 10
+                floor:
+                  type: integer
+                  example: 1
+                floor_left:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  example: 5
+                floor_right:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  example: 5
+                size:
+                  type: integer
+                  example: 5
+                left_size:
+                  type: integer
+                  example: 3
+                right_size:
+                  type: integer
+                  example: 3
+                is_paddon:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+                paddon_quantity:
+                  type: integer
+                  example: 2
+                paddon_front_quantity:
+                  type: integer
+                  example: 1
+                paddon_back_quantity:
+                  type: integer
+                  example: 1
+                paddon_size:
+                  type: integer
+                  example: 3
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - type
+                    properties:
+                      type:
+                        type: integer
+                        enum: [1, 2, 3, 4]
+                        example: 1
+                      size:
+                        type: integer
+                        example: 5
+                      status_zone:
+                        type: string
+                        enum: [gold, green, red]
+                        example: gold
+                      product_count:
+                        type: integer
+                        minimum: 1
+                        example: 10
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /shelf/delete/{id}:
+    delete:
+      tags:
+        - Shelves
+      summary: Delete
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /product/list:
+    get:
+      tags:
+        - Products
+      summary: List
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  example: 1
+                per_page:
+                  type: integer
+                  example: 15
+                status:
+                  type: integer
+                  enum: [1, 2]
+                  example: 1
+                search:
+                  type: string
+                  example: 'Samsung'
+                category_sku:
+                  type: integer
+                  example: 117
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Product'
+
+  /product/update/{id}:
+    put:
+      tags:
+        - Products
+      summary: Update
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                size:
+                  type: integer
+                  example: 100
+                height:
+                  type: integer
+                  example: 50
+                dioganal:
+                  type: integer
+                  example: 55
+                weight:
+                  type: number
+                  example: 15.5
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /product/toggle/status:
+    put:
+      tags:
+        - Products
+      summary: Toggle status
+      description: Premium tovar qilib belgilash yoki bekor qilish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sku
+                - status
+              properties:
+                sku:
+                  type: integer
+                  example: 12345
+                status:
+                  type: boolean
+                  description: false=Premium, true=Normal
+                  example: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /product/family:
+    post:
+      tags:
+        - Products
+      summary: Make family
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - skus
+              properties:
+                skus:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - sku
+                      - order
+                    properties:
+                      sku:
+                        type: integer
+                        example: 12345
+                      order:
+                        type: integer
+                        example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  # ============================================
+  # BRANCHES AND REGIONS ENDPOINTS
+  # ============================================
+  /regions:
+    get:
+      tags:
+        - Branches and regions
+      summary: Regions
+      security: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Region'
+
+  /branch/list:
+    get:
+      tags:
+        - Branches and regions
+      summary: Branches
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - source
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                search:
+                  type: string
+                  example: 'Tashkent'
+                status:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+                source:
+                  type: boolean
+                  example: true
+                per_page:
+                  type: integer
+                  example: 15
+                region_id:
+                  type: integer
+                  example: 1
+                order_by:
+                  type: string
+                  example: 'name'
+                order_direction:
+                  type: string
+                  enum: [asc, desc]
+                  example: 'asc'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Branch'
+
+  /branch/change/status:
+    post:
+      tags:
+        - Branches and regions
+      summary: Change status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - branch_id
+                - status
+              properties:
+                branch_id:
+                  type: integer
+                  example: 1
+                status:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  # ============================================
+  # APPLICATIONS ENDPOINTS
+  # ============================================
+  /applications/list:
+    get:
+      tags:
+        - Applications
+      summary: List
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  example: 'search term'
+                category_sku:
+                  type: integer
+                  example: 117
+                step:
+                  type: integer
+                  example: 1
+                status:
+                  type: integer
+                  example: 1
+                branch_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+                region_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+                order_by:
+                  type: string
+                  example: 'created_at'
+                order_direction:
+                  type: string
+                  enum: [asc, desc]
+                  example: 'desc'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+
+  /applications/get/{id}:
+    get:
+      tags:
+        - Applications
+      summary: Get
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+
+  /applications/add:
+    post:
+      tags:
+        - Applications
+      summary: Add
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - category_sku
+              properties:
+                category_sku:
+                  type: integer
+                  example: 117
+                region_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+                branch_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+                upload_id:
+                  type: integer
+                  example: 1
+                document_id:
+                  type: integer
+                  example: 1
+                comment:
+                  type: string
+                  example: 'Application comment'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /applications/change/step:
+    post:
+      tags:
+        - Applications
+      summary: Change step
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - step
+                - app_id
+              properties:
+                step:
+                  type: integer
+                  enum: [1, 2, 3]
+                  example: 2
+                app_id:
+                  type: integer
+                  example: 1
+                comment:
+                  type: string
+                  example: 'Step change comment'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /applications/delete/{id}:
+    delete:
+      tags:
+        - Applications
+      summary: Delete
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  # ============================================
+  # PRICE TAGS ENDPOINTS
+  # ============================================
+  /price_tag/sennik/list:
+    get:
+      tags:
+        - Price Tags
+      summary: List senniks
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_by:
+                  type: string
+                  example: 'id'
+                order_direction:
+                  type: string
+                  enum: [asc, desc]
+                  example: 'desc'
+                status:
+                  type: integer
+                  example: 1
+                search:
+                  type: string
+                  example: 'search term'
+                sku:
+                  type: integer
+                  example: 12345
+                has_template:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+                per_page:
+                  type: integer
+                  example: 15
+                page:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sennik'
+
+  /price_tag/sennik/show/{id}:
+    get:
+      tags:
+        - Price Tags
+      summary: Show sennik
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        description: Filters
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_by:
+                  type: string
+                  example: 'price_tag_goods.id'
+                order_direction:
+                  type: string
+                  enum: [asc, desc]
+                  example: 'asc'
+                search:
+                  type: string
+                  example: 'search term'
+                category_sku:
+                  type: integer
+                  example: 117
+                skus:
+                  type: array
+                  items:
+                    type: integer
+                  example: [12345, 67890]
+                only_shelf:
+                  type: integer
+                  enum: [0, 1]
+                  example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Sennik'
+                  - type: object
+                    properties:
+                      goods:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PriceTagGood'
+
+  /price_tag/template/list:
+    get:
+      tags:
+        - Price Tags
+      summary: List templates
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_by:
+                  type: string
+                  example: 'id'
+                order:
+                  type: string
+                  enum: [asc, desc]
+                  example: 'desc'
+                per_page:
+                  type: integer
+                  example: 15
+                page:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/PriceTagTemplate'
+                            - type: object
+                              properties:
+                                senniks:
+                                  type: array
+                                  items:
+                                    $ref: '#/components/schemas/Sennik'
+
+  /price_tag/template/save:
+    post:
+      tags:
+        - Price Tags
+      summary: Save template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - data
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                type:
+                  type: string
+                  example: 'template_type'
+                name:
+                  type: string
+                  example: 'Template name'
+                data:
+                  type: array
+                  example: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceTagTemplate'
+
+  /price_tag/template/delete/{id}:
+    delete:
+      tags:
+        - Price Tags
+      summary: Delete template
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
 
 # ============================================
 # COMPONENTS
@@ -208,12 +1176,6 @@ components:
       scheme: bearer
       bearerFormat: 'Sanctum Token'
       description: Laravel Sanctum authentication token
-
-    projects_token:
-      type: apiKey
-      in: header
-      name: X-Projects-Token
-      description: Service-to-service authentication token
 
   parameters:
     Page:
@@ -368,7 +1330,6 @@ components:
           type: integer
         type:
           type: integer
-          description: Shelf type (1-10)
         category_sku:
           type: integer
         branch_id:
@@ -384,10 +1345,6 @@ components:
           enum: [ 0, 1 ]
         paddon_quantity:
           type: integer
-        products:
-          type: array
-          items:
-            $ref: '#/components/schemas/Product'
         created_at:
           type: string
           format: date-time
@@ -398,35 +1355,253 @@ components:
     PaginatedResponse:
       type: object
       properties:
-        success:
-          type: boolean
-          example: true
         data:
+          type: array
+          items:
+            type: object
+
+    Region:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name_ru:
+          type: string
+          example: 'Ташкент'
+        name_uzc:
+          type: string
+          example: 'Тошкент'
+        name_uz:
+          type: string
+          example: 'Toshkent'
+
+    Branch:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        status:
+          type: integer
+          enum: [0, 1]
+          example: 1
+        name:
+          type: string
+          example: 'Branch 1'
+        address:
+          type: string
+          example: 'Tashkent, Chilonzor'
+        location:
+          type: string
+          example: '41.299496,69.240074'
+        token:
+          type: string
+          example: 'branch_token_123'
+        region_id:
+          type: integer
+          example: 1
+        phones:
+          type: string
+          example: '+998901234567'
+        link:
+          type: string
+          example: 'https://example.com'
+        info:
+          type: string
+          example: 'Additional info'
+        region:
+          $ref: '#/components/schemas/Region'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Application:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        category_sku:
+          type: integer
+          example: 117
+        shelf_id:
+          type: integer
+          example: 1
+        step:
+          type: integer
+          example: 1
+        upload_id:
+          type: integer
+          example: 1
+        document_id:
+          type: integer
+          example: 1
+        owner_id:
+          type: integer
+          example: 1
+        comment:
+          type: string
+          example: 'Application comment'
+        status:
+          type: integer
+          example: 1
+        owner:
+          $ref: '#/components/schemas/User'
+        shelf:
+          $ref: '#/components/schemas/Shelf'
+        category:
           type: object
           properties:
-            current_page:
+            sku:
               type: integer
-            data:
-              type: array
-              items:
-                type: object
-            first_page_url:
+            name:
               type: string
-            from:
+        upload:
+          type: object
+          properties:
+            id:
               type: integer
-            last_page:
-              type: integer
-            last_page_url:
-              type: string
-            next_page_url:
-              type: string
             path:
               type: string
-            per_page:
+        document:
+          type: object
+          properties:
+            id:
               type: integer
-            prev_page_url:
+            path:
               type: string
-            to:
+        branches:
+          type: array
+          items:
+            $ref: '#/components/schemas/Branch'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Region'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Sennik:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        log_id:
+          type: string
+          example: 'LOG123'
+        name:
+          type: string
+          example: 'Sennik name'
+        comment:
+          type: string
+          example: 'Comment text'
+        template_id:
+          type: integer
+          example: 1
+        status:
+          type: integer
+          example: 1
+        step:
+          type: integer
+          example: 1
+        start_date:
+          type: string
+          format: date
+          example: '2025-01-01'
+        end_date:
+          type: string
+          format: date
+          example: '2025-12-31'
+        shelf_count:
+          type: integer
+          example: 10
+        good_count:
+          type: integer
+          example: 25
+        is_saw:
+          type: boolean
+          example: false
+        template:
+          $ref: '#/components/schemas/PriceTagTemplate'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PriceTagTemplate:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          example: 'template_type'
+        name:
+          type: string
+          example: 'Template name'
+        data:
+          type: object
+          example: {}
+        show_old_price:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PriceTagGood:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        sennik_id:
+          type: integer
+          example: 1
+        sku:
+          type: integer
+          example: 12345
+        category_sku:
+          type: integer
+          example: 117
+        branch_token:
+          type: string
+          example: 'branch_token_123'
+        product:
+          $ref: '#/components/schemas/Product'
+        category:
+          type: object
+          properties:
+            sku:
               type: integer
-            total:
-              type: integer
+            name:
+              type: string
+        months:
+          type: array
+          items:
+            type: object
+        months_info:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

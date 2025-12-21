@@ -119,7 +119,7 @@ return [
         'hideSearch' => false,
 
         /** Whether dark mode is on or off initially (light mode) */
-        'darkMode' => false,
+        'darkMode' => true,
 
         /** forceDarkModeState makes it always this state no matter what*/
 //        'forceDarkModeState' => 'light',
