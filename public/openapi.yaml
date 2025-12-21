@@ -343,22 +343,10 @@ components:
           description: Unique product identifier
         name:
           type: string
-        name_ru:
-          type: string
         category_sku:
           type: integer
-        category:
-          type: object
-          properties:
-            sku:
-              type: integer
-            name:
-              type: string
-        brand:
-          type: string
-        attributes:
-          type: object
-          description: Product specifications (varies by category)
+        brand_sku:
+          type: integer
         price:
           type: number
           format: float
@@ -383,19 +371,8 @@ components:
           description: Shelf type (1-10)
         category_sku:
           type: integer
-        category:
-          type: object
         branch_id:
           type: integer
-        branch:
-          type: object
-          properties:
-            id:
-              type: integer
-            name:
-              type: string
-            token:
-              type: string
         product_count:
           type: integer
         floor:
