@@ -43,6 +43,7 @@ return [
     'anketa' => [
         'base_url' => env('ANKETA_BASE_URL'),
         'token' => env('ANKETA_TOKEN'),
+        'manual_token' => env('ANKETA_MANUAL_TOKEN'),
     ],
 
     'sms' => [

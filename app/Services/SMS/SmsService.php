@@ -11,7 +11,7 @@ class SmsService
     public static function sendSms(string $phone, string $text): void
     {
         try {
-            $token = config('services.integrations.anketa.token');
+            $token = config('services.anketa.manual_token');
             $request = (new AnketaConnector($token))->send(new SendSmsRequest($phone, $text));
 
             if ($request->status() != 200) {
