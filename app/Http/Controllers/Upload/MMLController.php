@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Upload;
 
-use App\Http\Controllers\Controller;
 use App\Imports\MMLImport;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MMLController extends Controller

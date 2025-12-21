@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\Product\SyncAttributesJob;
+use Illuminate\Http\Request;
 use App\Models\Product\Product;
 use App\Services\Admin\AdminService;
-use Illuminate\Http\Request;
+use App\Jobs\Product\SyncAttributesJob;
 
 class AdminController extends Controller
 {

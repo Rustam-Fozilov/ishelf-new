@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Application;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Application\AddRequest;
-use App\Http\Requests\Application\ChangeStepRequest;
-use App\Http\Requests\Application\ListRequest;
-use App\Http\Resources\Resource;
-use App\Services\Application\ApplicationService;
-use App\Services\RolePerm\PermissionService;
 use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use App\Http\Controllers\Controller;
+use App\Services\RolePerm\PermissionService;
+use App\Http\Requests\Application\AddRequest;
+use App\Http\Requests\Application\ListRequest;
+use App\Services\Application\ApplicationService;
+use App\Http\Requests\Application\ChangeStepRequest;
 
 class ApplicationController extends Controller
 {

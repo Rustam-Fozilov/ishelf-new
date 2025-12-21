@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Product;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\ListRequest;
-use App\Http\Requests\Product\MakeFamilyRequest;
-use App\Http\Requests\Product\ToggleStatusRequest;
-use App\Http\Requests\Product\UpdateRequest;
-use App\Http\Resources\Resource;
-use App\Jobs\PriceTag\PriceTagSyncJob;
-use App\Jobs\Product\ProductPriceMonthsJob;
-use App\Jobs\Product\ProductSyncJob;
-use App\Services\Product\ProductLogService;
-use App\Services\Product\ProductService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use App\Http\Controllers\Controller;
+use App\Jobs\Product\ProductSyncJob;
+use App\Jobs\PriceTag\PriceTagSyncJob;
+use App\Services\Product\ProductService;
+use App\Http\Requests\Product\ListRequest;
+use App\Services\Product\ProductLogService;
+use App\Jobs\Product\ProductPriceMonthsJob;
+use App\Http\Requests\Product\UpdateRequest;
+use App\Http\Requests\Product\MakeFamilyRequest;
+use App\Http\Requests\Product\ToggleStatusRequest;
 
 class ProductController extends Controller
 {

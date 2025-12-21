@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\PrintLog;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\PrintLog\CreateRequest;
-use App\Http\Requests\PrintLog\ListByShelfRequest;
-use App\Http\Requests\PrintLog\TopListRequest;
-use App\Http\Resources\Resource;
-use App\Services\PrintLog\PrintLogService;
 use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use App\Http\Controllers\Controller;
+use App\Services\PrintLog\PrintLogService;
+use App\Http\Requests\PrintLog\CreateRequest;
+use App\Http\Requests\PrintLog\TopListRequest;
+use App\Http\Requests\PrintLog\ListByShelfRequest;
 
 class PrintLogController extends Controller
 {

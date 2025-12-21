@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Branch\ChangeStatusRequest;
-use App\Http\Requests\Branch\ListRequest;
-use App\Http\Resources\Resource;
-use App\Services\BranchService;
 use Illuminate\Http\Request;
+use App\Services\BranchService;
+use App\Http\Resources\Resource;
+use App\Http\Requests\Branch\ListRequest;
+use App\Http\Requests\Branch\ChangeStatusRequest;
 
 class BranchController extends Controller
 {

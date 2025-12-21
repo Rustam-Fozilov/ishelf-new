@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Shelf;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductShelfTemp\AutoOrderingV2Request;
-use App\Services\Shelf\ShelfTempService;
-use App\Http\Requests\AutoOrdering\SaveAutoOrderingRequest;
-use App\Http\Requests\ProductShelfTemp\AddProductRequest;
-use App\Http\Requests\ProductShelfTemp\AutoOrderingRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Services\Shelf\ShelfTempService;
+use App\Http\Requests\ProductShelfTemp\AddProductRequest;
+use App\Http\Requests\AutoOrdering\SaveAutoOrderingRequest;
+use App\Http\Requests\ProductShelfTemp\AutoOrderingRequest;
+use App\Http\Requests\ProductShelfTemp\AutoOrderingV2Request;
 
 class ShelfTempController extends Controller
 {

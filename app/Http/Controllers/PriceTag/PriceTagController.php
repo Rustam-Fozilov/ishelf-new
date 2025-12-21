@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\PriceTag;
 
+use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PriceTag\AttachBranchRequest;
-use App\Http\Requests\PriceTag\AttachTemplateRequest;
-use App\Http\Requests\PriceTag\ChangeStepRequest;
+use App\Services\PriceTag\PriceTagService;
 use App\Http\Requests\PriceTag\ListRequest;
 use App\Http\Requests\PriceTag\PrintRequest;
-use App\Http\Requests\PriceTag\SaveTemplateRequest;
-use App\Http\Resources\Resource;
-use App\Services\PriceTag\PriceTagService;
 use App\Services\RolePerm\PermissionService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\PriceTag\ChangeStepRequest;
+use App\Http\Requests\PriceTag\AttachBranchRequest;
+use App\Http\Requests\PriceTag\SaveTemplateRequest;
+use App\Http\Requests\PriceTag\AttachTemplateRequest;
 
 class PriceTagController extends Controller
 {

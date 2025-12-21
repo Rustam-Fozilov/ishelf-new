@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Category;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductCategory\AddPrintTypeRequest;
-use App\Http\Requests\ProductCategory\AddTypeRequest;
-use App\Http\Requests\ProductCategory\ListRequest;
-use App\Http\Requests\ProductCategory\UploadAttributeRequest;
-use App\Http\Resources\Resource;
-use App\Services\Product\ProductCategoryService;
 use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use App\Http\Controllers\Controller;
+use App\Services\Product\ProductCategoryService;
+use App\Http\Requests\ProductCategory\ListRequest;
+use App\Http\Requests\ProductCategory\AddTypeRequest;
+use App\Http\Requests\ProductCategory\AddPrintTypeRequest;
+use App\Http\Requests\ProductCategory\UploadAttributeRequest;
 
 class ProductCategoryController extends Controller
 {

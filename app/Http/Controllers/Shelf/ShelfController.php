@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Shelf;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\Resource;
-use App\Services\Shelf\ShelfService;
 use App\Http\Controllers\Controller;
+use App\Services\Shelf\ShelfService;
 use App\Http\Requests\Shelf\AddRequest;
 use App\Http\Requests\Shelf\ListRequest;
 use App\Services\Shelf\PhoneShelfService;

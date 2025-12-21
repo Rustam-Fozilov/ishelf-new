@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Shelf;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\ShelfStockPriority\AddShelfStockPriorityRequest;
-use App\Services\RolePerm\PermissionService;
-use App\Services\Shelf\ShelfStockPriorityService;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Services\Shelf\ShelfStockPriorityService;
+use App\Http\Requests\ShelfStockPriority\AddShelfStockPriorityRequest;
 
 class ShelfStockPriorityController extends Controller
 {

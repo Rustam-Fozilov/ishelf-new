@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Product;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\RolePerm\PermissionService;
+use App\Services\Product\ProductParametersService;
 use App\Http\Requests\ProductParameter\ListRequest;
 use App\Http\Requests\ProductParameter\UpdateRequest;
-use App\Services\Product\ProductParametersService;
-use App\Services\RolePerm\PermissionService;
-use Illuminate\Http\Request;
 
 class ProductParameterController extends Controller
 {

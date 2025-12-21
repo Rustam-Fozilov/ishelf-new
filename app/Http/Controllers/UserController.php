@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use App\Services\User\UserService;
 use App\Http\Requests\User\AddRequest;
-use App\Http\Requests\User\ChangePasswordRequest;
-use App\Http\Requests\User\ChangePhoneRequest;
 use App\Http\Requests\User\ListRequest;
 use App\Http\Requests\User\UpdateRequest;
-use App\Http\Resources\Resource;
 use App\Services\RolePerm\PermissionService;
-use App\Services\User\UserService;
-use Illuminate\Http\Request;
+use App\Http\Requests\User\ChangePhoneRequest;
+use App\Http\Requests\User\ChangePasswordRequest;
 
 class UserController extends Controller
 {

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Stock;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Jobs\Product\ProductSyncJob;
-use Illuminate\Http\Request;
 
 class StockController extends Controller
 {

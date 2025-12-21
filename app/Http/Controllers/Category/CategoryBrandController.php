@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Category;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Resource;
-use App\Models\Category\CategoryBrand;
 use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use App\Http\Controllers\Controller;
+use App\Models\Category\CategoryBrand;
 
 class CategoryBrandController extends Controller
 {
