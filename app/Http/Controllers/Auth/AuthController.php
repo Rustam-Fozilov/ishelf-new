@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\CheckSmsRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\JsonResponse;
@@ -19,6 +20,12 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $data = $this->service->login($request->validated());
+        return success($data);
+    }
+
+    public function check_sms(CheckSmsRequest $request)
+    {
+        $data = $this->service->loginCheckSms($request->get('token'), $request->get('otp'));
         return success($data);
     }
 

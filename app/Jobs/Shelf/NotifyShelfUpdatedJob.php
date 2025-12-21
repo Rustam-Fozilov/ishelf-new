@@ -3,10 +3,10 @@
 namespace App\Jobs\Shelf;
 
 use App\Models\Shelf\Shelf;
-use App\Services\Telegraph\TelegraphService;
 use App\Services\User\UserBranchService;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\Telegraph\TelegraphService;
 
 class NotifyShelfUpdatedJob implements ShouldQueue
 {

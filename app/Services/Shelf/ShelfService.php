@@ -2,6 +2,7 @@
 
 namespace App\Services\Shelf;
 
+use App\Models\Product\Parameter;
 use App\Models\Upload;
 use App\Models\Shelf\Shelf;
 use App\Models\Shelf\PhoneShelf;
@@ -155,6 +156,27 @@ class ShelfService
             $shelf = Shelf::query()->create($params);
 
             if ($is_phone) {
+                PhoneShelfService::create($shelf->id, $params['items']);
+            }
+
+            DB::commit();
+            return $shelf;
+        } catch (\Throwable $e) {
+            return throwResponse($e);
+        }
+    }
+
+    public function addV2(array $params)
+    {
+        DB::beginTransaction();
+
+        try {
+            $checkService = new ShelfCheckService();
+            $checkService->checkUnique($params['branch_id'], $params['category_sku']);
+
+            $shelf = Shelf::query()->create($params);
+
+            if (!empty($params['items'])) {
                 PhoneShelfService::create($shelf->id, $params['items']);
             }
 
@@ -366,12 +388,21 @@ class ShelfService
 
     public function checkBySkuOrdering(int $shelf_id, int $ordering, ?int $sku = null): ?ProductShelf
     {
-        return ProductShelf::query()
+        $check = ProductShelf::query()
             ->where('sku', $sku)
             ->where('shelf_id', $shelf_id)
             ->where('ordering', $ordering)
             ->first();
 
+        if (!is_null($sku)) {
+            ProductShelf::query()
+                ->whereNull('sku')
+                ->where('shelf_id', $shelf_id)
+                ->where('ordering', $ordering)
+                ->delete();
+        }
+
+        return $check;
     }
 
     public function deleteProductShelf(int $shelf_id, int $ordering): void
@@ -405,5 +436,17 @@ class ShelfService
     {
         $upload = Upload::query()->where('url', $params['file_url'])->first();
         Shelf::query()->where('id', $params['shelf_id'])->update(['upload_id' => $upload->id]);
+    }
+
+    public function getParameters(array $params)
+    {
+        $shelf = Shelf::query()->find($params['shelf_id']);
+
+        return Parameter::query()
+            ->where('category_sku', $shelf->category_sku)
+            ->where('type', 'excel')
+            ->select(['key', 'name', 'short_name'])
+            ->groupBy(['key', 'name', 'short_name'])
+            ->get();
     }
 }

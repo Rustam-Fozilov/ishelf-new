@@ -3,9 +3,9 @@
 namespace App\Jobs\Product;
 
 use App\Models\Product\Product;
-use App\Services\Product\ProductParametersService;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\Product\ProductParametersService;
 
 class SyncAttributesJob implements ShouldQueue
 {

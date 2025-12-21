@@ -2,9 +2,9 @@
 
 namespace App\Jobs\PriceTag;
 
-use App\Services\Telegraph\TelegraphService;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\Telegraph\TelegraphService;
 
 class NotifySennikJob implements ShouldQueue
 {

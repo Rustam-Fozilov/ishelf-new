@@ -9,6 +9,13 @@ class AnketaConnector extends Connector
 {
     use AcceptsJson;
 
+    public function __construct(
+        protected $token = null
+    )
+    {
+        //
+    }
+
     /**
      * The Base URL of the API
      */
@@ -22,10 +29,12 @@ class AnketaConnector extends Connector
      */
     protected function defaultHeaders(): array
     {
+        $token = $this->token ?? config('services.anketa.token');
+
         return [
-            'Authorization' => 'Bearer ' . config('services.anketa.token'),
-            'Content-Type'  => 'application/json',
             'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer ' . $token,
         ];
     }
 
@@ -35,7 +44,7 @@ class AnketaConnector extends Connector
     protected function defaultConfig(): array
     {
         return [
-            'timeout' => 120,
+            'timeout' => 30,
         ];
     }
 }

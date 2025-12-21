@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Shelf;
 
+use Illuminate\Http\Request;
+use App\Http\Resources\Resource;
+use App\Services\Shelf\ShelfService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Shelf\AddRequest;
-use App\Http\Requests\Shelf\DeleteSkusRequest;
 use App\Http\Requests\Shelf\ListRequest;
+use App\Services\Shelf\PhoneShelfService;
+use App\Services\RolePerm\PermissionService;
+use App\Http\Requests\Shelf\DeleteSkusRequest;
 use App\Http\Requests\Shelf\UpdatePhoneTableRequest;
 use App\Http\Requests\Shelf\UploadPhoneImageRequest;
-use App\Http\Resources\Resource;
-use App\Services\RolePerm\PermissionService;
-use App\Services\Shelf\PhoneShelfService;
-use App\Services\Shelf\ShelfService;
-use Illuminate\Http\Request;
 
 class ShelfController extends Controller
 {
@@ -41,6 +41,13 @@ class ShelfController extends Controller
     {
         $this->permissionService->hasPermission('shelf.add');
         $this->service->add($request->validated());
+        return success();
+    }
+
+    public function addV2(AddRequest $request)
+    {
+        $this->permissionService->hasPermission('shelf.add');
+        $this->service->addV2($request->validated());
         return success();
     }
 
@@ -93,5 +100,12 @@ class ShelfController extends Controller
     public function addStartPointToPhone(int $table_id, Request $request)
     {
         PhoneShelfService::addStartPoint($table_id, $request['start_point']);
+    }
+
+    public function getParameters(Request $request)
+    {
+        $request->validate(['shelf_id' => 'required|integer|exists:shelves,id']);
+        $data = $this->service->getParameters($request->all());
+        return success($data);
     }
 }

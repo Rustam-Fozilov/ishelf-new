@@ -14,20 +14,22 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         using: function () {
+            $lang = getLang();
+
             Route::middleware('web')
-                ->prefix('{locale?}')
+                ->prefix($lang)
                 ->group(base_path('routes/web.php'));
 
             Route::middleware('api')
-                ->prefix('api/{locale?}')
+                ->prefix('api' . $lang)
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('api')
-                ->prefix('api/{locale?}')
+                ->prefix('api' . $lang)
                 ->group(base_path('routes/role_perm.php'));
 
             Route::middleware('admin')
-                ->prefix('test')
+                ->prefix('test' . $lang)
                 ->group(base_path('routes/test.php'));
         },
     )
@@ -44,6 +46,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->group('web', [
             \App\Http\Middleware\SetLocale::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {

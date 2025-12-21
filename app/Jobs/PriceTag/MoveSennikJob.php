@@ -2,8 +2,9 @@
 
 namespace App\Jobs\PriceTag;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use App\Services\PriceTag\PriceTagService;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class MoveSennikJob implements ShouldQueue
 {
@@ -22,6 +23,6 @@ class MoveSennikJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // TODO: move sennik logika yozish kerak
+        PriceTagService::moveSennik($this->sennik_id);
     }
 }

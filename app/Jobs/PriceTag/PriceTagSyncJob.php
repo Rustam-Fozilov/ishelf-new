@@ -2,9 +2,9 @@
 
 namespace App\Jobs\PriceTag;
 
-use App\Services\PriceTag\PriceTagLogService;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Services\PriceTag\PriceTagLogService;
 
 class PriceTagSyncJob implements ShouldQueue
 {

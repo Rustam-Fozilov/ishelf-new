@@ -647,4 +647,9 @@ class TvService implements ProductShelfInterface
             ->select('products.*', 'product_attributes.dioganal')
             ->with('attribute');
     }
+
+    public function tempAutoOrderProductV2(Shelf $shelf, array $priority)
+    {
+        $this->tempAutoOrderProduct($shelf, $priority);
+    }
 }

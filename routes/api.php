@@ -27,6 +27,7 @@ Route::group(['middleware' => 'projects_token'], function () {
 });
 
 Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/login/check_sms', [AuthController::class, 'check_sms']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('auth/me', [AuthController::class, 'me']);
@@ -52,15 +53,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('list', [ShelfController::class, 'list']);
         Route::get('get/{id}', [ShelfController::class, 'getById']);
         Route::post('add', [ShelfController::class, 'add']);
-        Route::post('add/v2', [ShelfController::class, 'addShelfV2']);
+        Route::post('add/v2', [ShelfController::class, 'addV2']);
         Route::put('update/{id}', [ShelfController::class, 'update']);
         Route::delete('delete/skus', [ShelfController::class, 'deleteSkus']);
         Route::delete('delete/{id}', [ShelfController::class, 'delete']);
         Route::post('update/phone/table', [ShelfController::class, 'updatePhoneTable']);
-        Route::post('parameters', [ShelfController::class, 'parameters']);
+        Route::get('parameters', [ShelfController::class, 'getParameters']);
     });
 
-    Route::group(['prefix' => 'priority'], function() {
+    Route::group(['prefix' => 'priority'], function () {
         Route::get('shelf/get/{shelf_id}', [ShelfStockPriorityController::class, 'get']);
         Route::post('shelf/add/{shelf_id}', [ShelfStockPriorityController::class, 'add']);
         Route::delete('shelf/delete/{shelf_id}', [ShelfStockPriorityController::class, 'delete']);

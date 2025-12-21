@@ -63,4 +63,9 @@ class RefrigeratorService implements ProductShelfInterface
 
         return BaseTempService::tempAutoOrderProduct($shelf, $priority, $priorityMapping);
     }
+
+    public function tempAutoOrderProductV2(Shelf $shelf, array $priority)
+    {
+        return BaseTempService::tempAutoOrderProductV2($shelf, $priority);
+    }
 }

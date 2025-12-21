@@ -11,8 +11,6 @@ use App\Http\Resources\Resource;
 use App\Jobs\PriceTag\PriceTagSyncJob;
 use App\Jobs\Product\ProductPriceMonthsJob;
 use App\Jobs\Product\ProductSyncJob;
-use App\Models\PriceTag\PriceTagLog;
-use App\Models\Product\ProductPriceLog;
 use App\Services\Product\ProductLogService;
 use App\Services\Product\ProductService;
 use Carbon\Carbon;

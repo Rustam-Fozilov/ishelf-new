@@ -2,12 +2,16 @@
 
 namespace App\Services\Shelf;
 
+use App\Http\Integrations\Anketa\AnketaConnector;
+use App\Http\Integrations\Anketa\Requests\GetPromoBankRequest;
 use App\Models\Branch;
+use App\Models\MML\MMLOrdering;
 use App\Models\Shelf\Shelf;
 use App\Models\Product\Product;
 use App\Models\Shelf\ShelvesTemp;
 use App\Models\Shelf\AutoOrdering;
 use App\Models\Shelf\ProductShelfTemp;
+use App\Models\Stock\StockByBranch;
 use App\Services\ProductShelf\TvService;
 use App\Interfaces\ProductShelfInterface;
 use App\Services\ProductShelf\PhoneService;
@@ -214,6 +218,72 @@ class ShelfTempService
             ->where('products.status', 1)
             ->whereIn('products.sku', $stock->pluck('sku')->toArray())
             ->distinct('products.sku');
+    }
+
+    public static function getStocksFromPromoBank(Shelf $shelf)
+    {
+        $result = (new AnketaConnector())->send(new GetPromoBankRequest($shelf->category_sku));
+        if ($result->failed()) return false;
+
+        return $result->json();
+    }
+
+    public static function getStocksFromMML($shelf)
+    {
+        return MMLOrdering::query()
+            ->where('branch_id', $shelf->branch_id)
+            ->where('category_sku', $shelf->category_sku)
+            ->orderBy('ordering')
+            ->get();
+    }
+
+    public static function checkStockForShelf($shelf, array $skus, int $limit): array
+    {
+        $branch = Branch::query()->where('id', $shelf->branch_id)->first();
+        return (new StockByBranch())
+            ->setTable($branch->token)
+            ->newQuery()
+            ->whereIn('sku', $skus)
+            ->limit($limit)
+            ->pluck('sku')
+            ->toArray();
+    }
+
+    public static function getNeedStocks($shelf, array $skus, int $limit): array
+    {
+        $branch = Branch::query()->where('id', $shelf->branch_id)->first();
+        return (new StockByBranch())
+            ->setTable($branch->token)
+            ->newQuery()
+            ->whereNotIn('sku', $skus)
+            ->limit($limit)
+            ->pluck('sku')
+            ->toArray();
+    }
+
+    public static function getStocksForShelfV2(Shelf $shelf, int $count)
+    {
+        $promo = self::getStocksFromPromoBank($shelf);
+        $promo = collect($promo)->pluck('sku')->toArray();
+        $mml = self::getStocksFromMML($shelf);
+        $mml = $mml->pluck('sku')->toArray();
+
+        $skus = array_merge($promo, $mml);
+        $skus = array_map('intval', $skus);
+        $skus = self::checkStockForShelf($shelf, $skus, $count);
+
+        if (count($skus) < $count) {
+            $other_skus = self::getNeedStocks($shelf, $skus, $count - count($skus));
+            $skus = array_merge($skus, $other_skus);
+        }
+
+        return Product::query()
+            ->join('product_attributes', 'products.sku', '=', 'product_attributes.sku')
+            ->whereNull('products.parent_sku')
+            ->where('products.status', 1)
+            ->whereIn('products.sku', $skus)
+            ->distinct('products.sku')
+            ->select('products.*');
     }
 
     public function saveAutoOrderingProps(array $data): void

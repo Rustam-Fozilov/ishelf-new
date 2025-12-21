@@ -3,8 +3,8 @@
 namespace App\Jobs\Product;
 
 use App\Services\Product\ProductService;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ProductSyncJob implements ShouldQueue
 {

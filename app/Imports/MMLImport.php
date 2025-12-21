@@ -3,11 +3,11 @@
 namespace App\Imports;
 
 use App\Models\Branch;
-use App\Models\MML\MMLOrdering;
-use App\Models\Product\Product;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Product\Product;
+use App\Models\MML\MMLOrdering;
 use Illuminate\Support\Collection;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 

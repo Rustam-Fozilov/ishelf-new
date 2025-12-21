@@ -17,6 +17,7 @@
         "mongodb/laravel-mongodb": "^5.4",
         "owen-it/laravel-auditing": "^14.0",
         "saloonphp/laravel-plugin": "^3.0",
+        "scalar/laravel": "^0.2.0",
         "spiral/roadrunner-cli": "^2.6.0",
         "spiral/roadrunner-http": "^3.3.0"
     },
