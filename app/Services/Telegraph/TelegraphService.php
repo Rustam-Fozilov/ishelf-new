@@ -2,9 +2,9 @@
 
 namespace App\Services\Telegraph;
 
-use App\Models\PriceTag\Sennik;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use App\Models\PriceTag\Sennik;
 use App\Models\Telegram\BotAction;
 use DefStudio\Telegraph\DTO\Message;
 use DefStudio\Telegraph\Keyboard\Button;
@@ -51,13 +51,15 @@ class TelegraphService
 
         if ($user->telegraph_chat_id) {
             $chat = TelegraphChat::query()->where('chat_id', $user->telegraph_chat_id)->first();
+            if ($chat->notification == 0) return;
+
             $chat->message($message)->keyboard(Keyboard::make()->buttons([
                 Button::make('Tekshirish')->url("https://i-shelf.uz/#/shelf/$shelf->id?type=$shelf->category_sku&is_default_print=true")
             ]))->send();
         }
 
         $me = TelegraphChat::query()->where('chat_id', '705320870')->first();
-        if ($me) $me->message($message)->send();
+        if ($me && $me->notification == 1) $me->message($message)->send();
     }
 
     public static function notifyPM($branch, array $products, string $log_date): void
@@ -88,6 +90,8 @@ class TelegraphService
 
                 if (count($filteredProducts) > 0) {
                     $chat = TelegraphChat::query()->where('chat_id', $user->telegraph_chat_id)->first();
+                    if ($chat->notification == 0) continue;
+
                     $chat->message($message)->keyboard(Keyboard::make()->buttons([
                         Button::make('Yangiladim ✅')->action('productRenewed')
                             ->param('date', base64_encode($log_date))
@@ -114,7 +118,7 @@ class TelegraphService
 
         $me = TelegraphChat::query()->where('chat_id', '705320870')->first();
 
-        if ($me) {
+        if ($me && $me->notification == 1) {
             $me->message($message)->keyboard(Keyboard::make()->buttons([
                 Button::make('Yangiladim ✅')->action('productRenewed')
                     ->param('date', base64_encode($log_date))
@@ -155,6 +159,8 @@ class TelegraphService
                     }
 
                     $chat = TelegraphChat::query()->where('chat_id', $user->telegraph_chat_id)->first();
+                    if ($chat->notification == 0) continue;
+
                     $chat->message($message)->send();
                 }
             }
@@ -182,7 +188,7 @@ class TelegraphService
         }
 
         $chat = TelegraphChat::query()->where('chat_id', '705320870')->first();
-        if ($chat) $chat->message($message)->send();
+        if ($chat && $chat->notification == 1) $chat->message($message)->send();
     }
 
     public function productRenewed($log_date, $branch_id, $message_id): void
@@ -212,8 +218,11 @@ class TelegraphService
         }
 
         $chat = TelegraphChat::query()->where('chat_id', $user->telegraph_chat_id)->first();
+        if ($chat->notification == 0) return;
         $chat->message($message)->send();
+
         $chat = TelegraphChat::query()->where('chat_id', '705320870')->first();
+        if ($chat->notification == 0) return;
         $chat->message($message)->send();
     }
 }
