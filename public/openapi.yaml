@@ -2,15 +2,15 @@ openapi: 3.0.3
 info:
   title: iShelf Docs
   description: |
-    iShelf is a comprehensive shelf management and product inventory system for retail operations.
+    iShelf - bu savdo operatsiyalari uchun mo'ljallangan javonlar va mahsulotlar boshqaruvi tizimi.
 
-    Key Features
-    - **Shelf Management** - Manage physical shelves across retail branches
-    - **Product & Stock Management** - Track inventory and stock levels
-    - **Price Tag Management** - Create and manage price tags (senniks)
-    - **Auto-Ordering System** - Automatically fill shelves with products
-    - **Application Workflow** - Handle shelf application requests with multi-step approval
-    - **Telegram Integration** - Real-time notifications via Telegram bot
+    Asosiy imkoniyatlar
+    - **Javonlarni boshqarish** - Filiallarida jismoniy javonlarni boshqarish
+    - **Mahsulot va Ombor boshqaruvi** - Ombor ostatkalarini kuzatish
+    - **Narx teglarini boshqarish** - Narx teglarini (senniklar) yaratish va boshqarish
+    - **Avtomatik buyurtma tizimi** - Javonlarni avtomatik ravishda mahsulotlar bilan to'ldirish
+    - **Ariza jarayoni** - Ko'p bosqichli tasdiqlash bilan javonlarni arizalar orqali qayta ishlash
+    - **Telegram integratsiyasi** - Telegram bot orqali real vaqtda bildirishnomalar
   version: 1.0.0
 
 servers:
@@ -19,19 +19,19 @@ servers:
 
 tags:
   - name: Authentication
-    description: User authentication and session management
+    description: User authentication
   - name: Users
-    description: User management operations
+    description: User management
   - name: Shelves
     description: Shelf management
   - name: Products
-    description: Product listing and management
+    description: Product management
   - name: Price Tags
     description: Price tag (sennik) management
   - name: Branches and regions
     description: Branch and regions list
   - name: Applications
-    description: Shelf application workflow
+    description: Application management
 
 security:
   - sanctum: [ ]
@@ -46,7 +46,7 @@ paths:
         - Authentication
       summary: Login
       security: [ ]
-      description: Authenticate user with phone and password
+      description: Telefon raqami va parol orqali foydalanuvchini autentifikatsiya qilish
       requestBody:
         required: true
         content:
@@ -87,7 +87,7 @@ paths:
       tags:
         - Authentication
       summary: Verify SMS code
-      description: Check SMS verification code
+      description: SMS tasdiqlash kodini tekshirish
       security: [ ]
       requestBody:
         required: true
@@ -134,7 +134,7 @@ paths:
       tags:
         - Authentication
       summary: Get authenticated user
-      description: Retrieve current authenticated user
+      description: Joriy autentifikatsiya qilingan foydalanuvchi ma'lumotlarini olish
       responses:
         '200':
           description: User information
@@ -150,7 +150,7 @@ paths:
       tags:
         - Authentication
       summary: Logout user
-      description: Remove current authentication token
+      description: Joriy autentifikatsiya tokenini o'chirish
       responses:
         '200':
           description: Logout successful
@@ -171,11 +171,11 @@ paths:
       tags:
         - Users
       summary: List
-      description: Get users list
+      description: Foydalanuvchilar ro'yxatini olish
       parameters:
         - in: 'path'
           name: 'search'
-          description: "Search"
+          description: "Qidirish"
           required: false
           schema:
             type: string
@@ -196,7 +196,7 @@ paths:
       summary: List
       requestBody:
         required: false
-        description: Filters
+        description: Filterlar
         content:
           application/json:
             schema:
@@ -277,7 +277,7 @@ paths:
       tags:
         - Shelves
       summary: Add
-      description: Add new shelf
+      description: Yangi shelf qo'shish
       requestBody:
         required: true
         content:
@@ -379,7 +379,7 @@ paths:
       tags:
         - Shelves
       summary: Add V2
-      description: Add new shelf V2
+      description: Yangi shelf qo'shish V2
       requestBody:
         required: true
         content:
@@ -607,7 +607,7 @@ paths:
                   example: 12345
                 status:
                   type: boolean
-                  description: false=Premium, true=Normal
+                  description: false=Premium, true=Oddiy
                   example: true
       responses:
         '200':
@@ -1016,7 +1016,7 @@ paths:
             type: integer
             example: 1
       requestBody:
-        description: Filters
+        description: Filterlar
         required: false
         content:
           application/json:
@@ -1175,7 +1175,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: 'Sanctum Token'
-      description: Laravel Sanctum authentication token
+      description: Laravel Sanctum autentifikatsiya tokeni
 
   parameters:
     Page:
@@ -1185,7 +1185,7 @@ components:
         type: integer
         minimum: 1
         default: 1
-      description: Page number for pagination
+      description: Sahifa raqami
 
     PerPage:
       name: per_page
@@ -1195,11 +1195,11 @@ components:
         minimum: 1
         maximum: 100
         default: 15
-      description: Items per page
+      description: Sahifadagi elementlar soni
 
   responses:
     Unauthorized:
-      description: Unauthorized - Invalid or missing authentication token
+      description: Ruxsat berilmagan - Noto'g'ri yoki mavjud bo'lmagan autentifikatsiya tokeni
       content:
         application/json:
           schema:
@@ -1210,7 +1210,7 @@ components:
                 example: 'Unauthenticated.'
 
     NotFound:
-      description: Resource not found
+      description: Resurs topilmadi
       content:
         application/json:
           schema:
@@ -1224,7 +1224,7 @@ components:
                 example: 'Resource not found'
 
     ValidationError:
-      description: Validation error - Invalid request parameters
+      description: Validatsiya xatosi - Noto'g'ri so'rov parametrlari
       content:
         application/json:
           schema:
@@ -1287,7 +1287,7 @@ components:
         status:
           type: integer
           enum: [ 0, 1 ]
-          description: 0=inactive, 1=active
+          description: 0=nofaol, 1=faol
         created_at:
           type: string
           format: date-time
@@ -1302,7 +1302,7 @@ components:
           type: integer
         sku:
           type: integer
-          description: Unique product identifier
+          description: Mahsulot idsi
         name:
           type: string
         category_sku:
@@ -1315,7 +1315,6 @@ components:
         status:
           type: integer
           enum: [ 1, 2 ]
-          description: 1=active, 2=sold
         created_at:
           type: string
           format: date-time
