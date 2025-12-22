@@ -58,7 +58,7 @@ paths:
                 - password
               properties:
                 phone:
-                  type: stringENDPOINTS
+                  type: string
                   example: '998991234567'
                 password:
                   type: string
@@ -171,23 +171,148 @@ paths:
       tags:
         - Users
       summary: List
-      description: Foydalanuvchilar ro'yxatini olish
-      parameters:
-        - in: 'path'
-          name: 'search'
-          description: "Qidirish"
-          required: false
-          schema:
-            type: string
+      description: Foydalanuvchilar ro'yhatini olish
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: "Filters"
+              properties:
+                search:
+                  type: string
+                  example: 'smthng...'
+                page:
+                  type: integer
+                  example: 1
+                per_page:
+                  type: integer
+                  example: 10
+                role_id:
+                  type: integer
+                  example: 5
+                region_id:
+                  type: integer
+                  example: 5
+                status:
+                  type: integer
+                  example: 1
+                  minimum: 0
+                  maximum: 1
       responses:
         '200':
           description: "success"
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
+  /user/pinfl/{pinfl}:
+    get:
+      tags:
+        - Users
+      summary: Get by PINFL
+      description: PINFL orqali foydalanuvchi malumotlarini obkelish
+      parameters:
+        - name: pinfl
+          in: path
+          required: true
+          description: "Personal Identification Number (14-digit unique)"
+          schema:
+            type: string
+            pattern: '^\d{14}$'
+            example: "12345678901234"
+      responses:
+        '200':
+          description: "success"
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: ...
+
+  /user/get/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get by ID
+      description: ID orqali ko'rish
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: "success"
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: ...
+
+  /user/add/:
+    post:
+      tags:
+        - Users
+      summary: Add
+      description: Foydalanuvchi qo'shish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: ""
+              properties:
+                name:
+                  type: string
+                  example: "John"
+                surname:
+                  type: string
+                  example: "Doe"
+                patronymic:
+                  type: string
+                  example: "Russel"
+                role_id:
+                  type: integer
+                  example: 1
+                pinfl:
+                  type: string
+                  pattern: /^[0-9]{14}$/
+                  example: "12345678912345"
+                password:
+                  type: string
+                  minimum: 6
+                  example: 123456
+                branches:
+                  type: array
+                  minItems: 1
+                  example:
+                    - 1
+                    - 2
+                    - 3
+                categories:
+                  type: array
+                  required: false
+                  nullable: true
+                  minItems: 1
+
+      responses:
+        '200':
+          description: "success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
 
   /shelf/list:
     get:
