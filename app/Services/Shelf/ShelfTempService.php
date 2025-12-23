@@ -321,7 +321,7 @@ class ShelfTempService
             $expire = Carbon::parse($end_work)->subMinutes(30);
 
             if (Carbon::now()->greaterThanOrEqualTo($expire)) {
-                $this::autoOrdering(['shelf_id' => $shelf->shelf_id, 'order_priority' => $shelf->order_by]);
+                $this->autoOrdering(['shelf_id' => $shelf->shelf_id, 'order_priority' => $shelf->order_by]);
                 (new ShelfService())->moveToProduct($shelf->shelf_id, 1);
             }
         }

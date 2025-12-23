@@ -248,7 +248,7 @@ class ShelfService
 
             if ($temps->isNotEmpty()) {
                 $shelves->each(function ($shelf_id) {
-                    $this::moveToProduct($shelf_id);
+                    $this->moveToProduct($shelf_id);
                 });
             }
 
